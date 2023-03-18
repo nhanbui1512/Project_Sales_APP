@@ -1,4 +1,3 @@
-const User = require('../Model/user.model');
 const userModel = require('../Model/user.model');
 class userController {
     //GET all user
@@ -16,17 +15,29 @@ class userController {
     FindByID(req, response) {
         const ID = req.query.id;
         userModel.findByID(ID, (res) => {
-            response.status(200).json({ data: res[0] });
+            response.status(200).json({ data: res });
         });
     }
 
-    // get user by include name
-
+    // get user  include name
     FindInCludeName(req, response) {
         const userName = req.query.user_name;
-        userModel.findByName(userName, (result) => {
+        userModel.findIncludeName({ name: userName }, (result) => {
             response.status(200).json({ data: result });
         });
+    }
+
+    // get user by name
+    FindUserByUserName(req, response) {
+        const userName = req.query.user_name;
+        userModel
+            .findByName({ userName: userName })
+            .then((data) => {
+                response.status(200).json(data);
+            })
+            .catch((err) => {
+                response.status(501).json({ result: null });
+            });
     }
 
     CreateUser(req, response) {
@@ -45,6 +56,15 @@ class userController {
         const id = req.query.id;
         userModel.UpdateUser({ user, id }, (result) => {
             response.status(200).json({ result: result });
+        });
+    }
+
+    ChangePassword(req, response) {
+        const id = req.query.id;
+        const newPassord = req.body.password;
+
+        userModel.ChangePass({ id: id, newPassword: newPassord }, (result) => {
+            response.status(200).json(result);
         });
     }
 }

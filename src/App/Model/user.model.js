@@ -11,16 +11,13 @@ const User = function (user) {
 };
 
 User.getAll = (result) => {
-    db.query(
-        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
-        (err, users) => {
-            if (!err) {
-                result(users);
-            } else {
-                result(null);
-            }
-        },
-    );
+    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
+        if (!err) {
+            result(users);
+        } else {
+            result(null);
+        }
+    });
 };
 
 User.findByID = (ID, result) => {
@@ -36,7 +33,21 @@ User.findByID = (ID, result) => {
     );
 };
 
-User.findByName = (name, result) => {
+User.findByName = ({ userName }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM user WHERE UserName = '${userName}'`, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log(data);
+                resolve(data);
+            }
+        });
+    });
+};
+
+// find include name
+User.findIncludeName = ({ name }, result) => {
     db.query(
         `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE UserName LIKE '%${name}%'`,
         (err, user) => {
@@ -77,6 +88,17 @@ User.UpdateUser = ({ user, id }, result) => {
             }
         },
     );
+};
+
+User.ChangePass = ({ id, newPassword }, result) => {
+    db.query(`UPDATE user SET Password = '${newPassword}' WHERE IDUser = ${id}`, (err) => {
+        if (err) {
+            console.log(err);
+            result(false);
+        } else {
+            result(true);
+        }
+    });
 };
 
 module.exports = User;
