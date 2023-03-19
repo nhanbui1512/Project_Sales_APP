@@ -42,12 +42,8 @@ class userController {
 
     CreateUser(req, response) {
         const user = req.body;
-        userModel.CreateUser(user, (result) => {
-            if (result) {
-                response.status(200).json({ result: true });
-            } else {
-                response.status(200).json({ result: false });
-            }
+        userModel.CreateUser({ user: user }, (result) => {
+            response.status(200).json({ result: result });
         });
     }
 

@@ -35,14 +35,16 @@ User.findByID = (ID, result) => {
 
 User.findByName = ({ userName }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM user WHERE UserName = '${userName}'`, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                console.log(data);
-                resolve(data);
-            }
-        });
+        db.query(
+            `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE UserName = '${userName}'`,
+            (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            },
+        );
     });
 };
 
@@ -61,19 +63,27 @@ User.findIncludeName = ({ name }, result) => {
     );
 };
 
-User.CreateUser = (user, result) => {
-    db.query(
-        `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
-        VALUES('${user.user_name}','${user.email}','${user.phone_number}','${user.avatar_path}', ${user.access}, '${user.password}')
-        `,
-        (err) => {
-            if (err) {
-                result(false);
-            } else {
-                result(true);
-            }
-        },
-    );
+User.CreateUser = ({ user }, result) => {
+    db.query(`SELECT * FROM user WHERE UserName = '${user.user_name}'`, (res) => {
+        console.log(res);
+        if (res != null) {
+            db.query(
+                `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
+                VALUES('${user.user_name}','${user.email}','${user.phone_number}','${user.avatar_path}', ${user.access}, '${user.password}')
+                `,
+                (err) => {
+                    if (err) {
+                        result(false);
+                    } else {
+                        console.log('create successful');
+                        result(true);
+                    }
+                },
+            );
+        } else {
+            result(false);
+        }
+    });
 };
 
 User.UpdateUser = ({ user, id }, result) => {
