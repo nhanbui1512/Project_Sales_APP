@@ -12,6 +12,16 @@ class salesController {
     }
 
     CreatePostSales(req, response) {
+        const post = {
+            title: req.body.title,
+            description: req.body.description,
+            createAt: Date.now,
+            UpdateAt: Date.now,
+            idType: req.body.id_type,
+        };
+
+        const IDUser = null;
+
         postSales.Create();
     }
 }
