@@ -21,12 +21,11 @@ PostSales.GetAll = (result) => {
     });
 };
 
-PostSales.Create = ({ post, idUser }) => {
+PostSales.Create = ({ post }) => {
     return new Promise((resolve, reject) => {
         db.query(
             `INSERT INTO postsales (Title, Description, CreateAt, UpdateAt,IDUser, IDType) VALUES (
-            '${post.title}', '${post.description}',${Date.now},${Date.now} , ${idUser} , ${post.id_type} 
-        )`,
+            '${post.title}', '${post.description}',${Date.now()},${Date.now()} , ${post.id_user} , ${post.id_type})`,
             (err, res) => {
                 if (err) {
                     reject(err);

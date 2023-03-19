@@ -3,6 +3,7 @@ class salesController {
     //GET all sales post
     GetAll(req, response) {
         postSales.GetAll((result) => {
+            console.log(req.IDUser);
             if (result) {
                 response.status(200).json({ data: result });
             } else {
@@ -13,16 +14,21 @@ class salesController {
 
     CreatePostSales(req, response) {
         const post = {
+            id_user: req.body.IDUser,
             title: req.body.title,
             description: req.body.description,
-            createAt: Date.now,
-            UpdateAt: Date.now,
-            idType: req.body.id_type,
+            id_type: req.body.id_type,
         };
 
-        const IDUser = null;
-
-        postSales.Create();
+        postSales
+            .Create({ post: post })
+            .then((res) => {
+                response.status(200).json({ result: true, message: 'create postsales successful' });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server error' });
+            });
     }
 }
 module.exports = new salesController();
