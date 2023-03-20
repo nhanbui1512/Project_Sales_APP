@@ -111,4 +111,16 @@ User.ChangePass = ({ id, newPassword }, result) => {
     });
 };
 
+User.checkLogin = ({ userName, password }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
 module.exports = User;
