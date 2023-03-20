@@ -8,7 +8,7 @@ const isLoginMiddleWare = (req, response, next) => {
         const token = authHeader.split(' ')[1];
         try {
             var decode = jwt.verify(token, process.env.JWT_PASS);
-            req.body.IDUser = decode.IDUser;
+            req.IDUser = decode.IDUser;
             next();
         } catch (error) {
             console.log(error);

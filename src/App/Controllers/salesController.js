@@ -25,8 +25,13 @@ class salesController {
     }
 
     CreatePostSales(req, response) {
+        const files = req.files;
+        paths = [];
+        for (let i = 0; i < files.length; i++) {
+            // Lấy ra url ảnh
+        }
         const post = {
-            id_user: req.body.IDUser,
+            id_user: req.IDUser,
             title: req.body.title,
             description: req.body.description,
             id_type: req.body.id_type,
