@@ -11,21 +11,44 @@ const PostSales = function (post) {
 };
 
 PostSales.GetAll = (result) => {
-    db.query('SELECT * FROM postsales', (err, res) => {
-        if (err) {
-            console.log(err);
-            result(null);
-        } else {
-            result(res);
-        }
-    });
+    db.query(
+        'SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType',
+        (err, res) => {
+            if (err) {
+                console.log(err);
+                result(null);
+            } else {
+                result(res);
+            }
+        },
+    );
 };
 
 PostSales.Create = ({ post }) => {
     return new Promise((resolve, reject) => {
+        var now = new Date();
+        const nowStr = `${now.getFullYear()}-${
+            now.getMonth() + 1
+        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds}`;
+
         db.query(
             `INSERT INTO postsales (Title, Description, CreateAt, UpdateAt,IDUser, IDType) VALUES (
-            '${post.title}', '${post.description}',${Date.now()},${Date.now()} , ${post.id_user} , ${post.id_type})`,
+            '${post.title}', '${post.description}','${nowStr}','${nowStr}' , ${post.id_user} , ${post.id_type})`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+PostSales.Find = ({ id }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDPost = ${id} `,
             (err, res) => {
                 if (err) {
                     reject(err);
