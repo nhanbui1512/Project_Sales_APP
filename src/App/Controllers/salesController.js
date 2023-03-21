@@ -3,13 +3,25 @@ class salesController {
     //GET all sales post
     GetAll(req, response) {
         postSales.GetAll((result) => {
-            console.log(req.IDUser);
             if (result) {
                 response.status(200).json({ data: result });
             } else {
                 response.status(200).json({ datat: [] });
             }
         });
+    }
+
+    FindByID(req, response) {
+        const id = req.query.id;
+        postSales
+            .Find({ id })
+            .then((res) => {
+                response.status(200).json({ data: res });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ message: 'server error' });
+            });
     }
 
     CreatePostSales(req, response) {
