@@ -11,6 +11,6 @@ function route(app) {
     app.use('/api/user', userRoute);
     app.use('/api/sales', isLoginMiddleWare, salesRoute);
     app.use('/api/login', loginRoute);
-    app.use('/api/comment', commentRoute);
+    app.use('/api/comment', isLoginMiddleWare,commentRoute);
 }
 module.exports = route;

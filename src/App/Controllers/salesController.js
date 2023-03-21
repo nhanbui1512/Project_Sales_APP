@@ -5,6 +5,9 @@ class salesController {
         postSales.GetAll((result) => {
             if (result) {
                 response.status(200).json({ data: result });
+                console.log(req.body.access);
+                console.log(req.body.user_name);
+                console.log(req.body.IDUser)
             } else {
                 response.status(200).json({ datat: [] });
             }

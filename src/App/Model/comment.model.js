@@ -30,5 +30,23 @@ Comment.FindByPost = ({ IDPost }) => {
         );
     });
 };
+Comment.create_cmt = ({ IDPost, IDUser, content }) => {
+    return new Promise((resolve, reject) => {
+        var now = new Date();
+        const nowStr = `${now.getFullYear()}-${
+            now.getMonth() + 1
+        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds}`;
+        db.query(
+            `INSERT INTO comment (IDUser, CreateAt, UpdateAt, Content ,PostID) VALUES (${IDUser}, '${nowStr}', '${nowStr}', '${content}' , ${IDPost})`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+}
 
 module.exports = Comment;

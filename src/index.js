@@ -1,11 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const port = 3000;
 const app = express();
 const route = require('./routes');
 const db = require('./Config/Db');
 app.use(express.json());
-
+app.use(cors());
 route(app);
 
 db.connect;
