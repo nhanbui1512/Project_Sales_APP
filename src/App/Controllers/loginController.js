@@ -1,6 +1,6 @@
 const userModel = require('../Model/user.model');
+const token_require = require('../../until/token')
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
 
 class loginController {
     //GET all sales post
@@ -11,9 +11,10 @@ class loginController {
         userModel
             .checkLogin({ userName: userName, password: passWord })
             .then((res) => {
+                console.log(res);
                 if (res.length > 0) {
                     const user = res[0];
-                    const token = jwt.sign({ IDUser: user.IDUser }, process.env.JWT_PASS);
+                    const token = token_require.GenerateAccpectToken(user)
                     response.status(200).json({ message: 'login successful', token: token });
                 } else {
                     response.status(200).json({ message: 'username or password is not valid' });
