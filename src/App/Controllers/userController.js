@@ -17,7 +17,7 @@ class userController {
     FindByID(req, response) {
         const ID = req.query.id;
         userModel.findByID(ID, (res) => {
-            return  response.status(200).json({ data: res });
+            return response.status(200).json({ data: res });
         });
     }
 
@@ -66,40 +66,39 @@ class userController {
         });
     }
     RegisterSales(req, response) {
-        const id = req.body.IDUser
+        const id = req.IDUser;
         console.log(id);
         requestAccess.findbyiduser({ id: id }).then((result) => {
-            if(result.length > 0){
-                return response.status(501).json("Đã đăng kí");
-            }else
-            {
-                requestAccess.registerSales({ id: id }).then((result) => {
-                    return response.status(200).json("Đăng kí thành công");
-                }).catch((err) => {
-                    return response.status(501).json(err);
-                }
-                );
+            if (result.length > 0) {
+                return response.status(501).json('Đã đăng kí');
+            } else {
+                requestAccess
+                    .registerSales({ id: id })
+                    .then((result) => {
+                        return response.status(200).json('Đăng kí thành công');
+                    })
+                    .catch((err) => {
+                        return response.status(501).json(err);
+                    });
             }
-        })
+        });
     }
     RequestAccess(req, response) {
         let id_user = req.params.iduser;
 
-        let accuser = req.body.access;
-        if(accuser != 0)
-        {
-            return response.status(501).json("Không có quyền");
-        }
-        else
-        {
-            requestAccess.updateAccess(id_user ).then((result) => {
-                userModel.updateAccess({id:id_user})
-                return response.status(200).json("Cấp quyền thành công");
-            }
-            ).catch((err) => {
-                return response.status(501).json(err);
-            }
-            );
+        let accuser = req.access;
+        if (accuser != 0) {
+            return response.status(501).json('Không có quyền');
+        } else {
+            requestAccess
+                .updateAccess(id_user)
+                .then((result) => {
+                    userModel.updateAccess({ id: id_user });
+                    return response.status(200).json('Cấp quyền thành công');
+                })
+                .catch((err) => {
+                    return response.status(501).json(err);
+                });
         }
     }
 }
