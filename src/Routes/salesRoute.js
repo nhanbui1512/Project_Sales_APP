@@ -21,4 +21,6 @@ router.get('/find', salesController.FindByID);
 
 router.post('/add', upload.array('photos', 12), salesController.CreatePostSales);
 
+// /api/sales/delete?id_post=
+router.delete('/delete', salesController.DelPost);
 module.exports = router;

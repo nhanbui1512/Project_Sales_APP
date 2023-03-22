@@ -1,4 +1,6 @@
 const postSales = require('../Model/postsales.model');
+const Image = require('../Model/image.model');
+const PostSales = require('../Model/postsales.model');
 class salesController {
     //GET all sales post
     GetAll(req, response) {
@@ -11,6 +13,7 @@ class salesController {
         });
     }
 
+    // Find a post by id
     FindByID(req, response) {
         const id = req.query.id;
         postSales
@@ -24,10 +27,10 @@ class salesController {
             });
     }
 
+    // Add a post
     CreatePostSales(req, response) {
         const files = req.files;
 
-        // console.log(files);
         const post = {
             id_user: req.IDUser,
             title: req.body.title,
@@ -39,9 +42,21 @@ class salesController {
             postSales
                 .Create({ post: post })
                 .then((res) => {
-                    return response
-                        .status(200)
-                        .json({ result: true, message: 'create postsales successful' });
+                    const idPost = res.insertId;
+                    return idPost;
+                })
+                .then((idPost) => {
+                    console.log(idPost);
+
+                    Image.CreateMultiImage({ files: files, postID: idPost })
+                        .then(() => {
+                            response.status(200).json({ result: true, message: 'Successful' });
+                        })
+                        .catch((err) => {
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'Create Image is not successful' });
+                        });
                 })
                 .catch((err) => {
                     console.log(err);
@@ -52,6 +67,32 @@ class salesController {
                 .status(500)
                 .json({ result: false, message: 'Bạn không có quyền đăng bài' });
         }
+    }
+
+    // Delete a post
+    DelPost(req, response) {
+        const postID = req.query.id_post;
+        Image.DeleteImagesByPostID({ postID: postID })
+            .then(() => {
+                PostSales.Delete({ postID: postID })
+                    .then(() => {
+                        response
+                            .status(200)
+                            .json({ result: true, message: 'Delete post successful' });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        response
+                            .status(501)
+                            .json({ result: false, message: 'Delete post not successful' });
+                    });
+            })
+            .catch((err) => {
+                console.log(err);
+                response
+                    .status(501)
+                    .json({ result: false, message: 'Delete images of post is not successful' });
+            });
     }
 }
 module.exports = new salesController();

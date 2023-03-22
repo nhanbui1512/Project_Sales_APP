@@ -60,4 +60,13 @@ PostSales.Find = ({ id }) => {
     });
 };
 
+PostSales.Delete = ({ postID }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM postsales WHERE IDPost = ${postID}`, (err, res) => {
+            if (err) reject(err);
+            else resolve(res);
+        });
+    });
+};
+
 module.exports = PostSales;
