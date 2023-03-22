@@ -15,14 +15,14 @@ class loginController {
                 if (res.length > 0) {
                     const user = res[0];
                     const token = token_require.GenerateAccpectToken(user)
-                    response.status(200).json({ message: 'login successful', token: token });
+                    return response.status(200).json({ message: 'login successful', token: token });
                 } else {
-                    response.status(200).json({ message: 'username or password is not valid' });
+                    return response.status(200).json({ message: 'username or password is not valid' });
                 }
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ res: 'Error Server' });
+                return response.status(500).json({ res: 'Error Server' });
             });
     }
 }

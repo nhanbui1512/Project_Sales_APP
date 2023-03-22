@@ -12,14 +12,7 @@ const Comment = function (comment) {
 Comment.FindByPost = ({ IDPost }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT postsales.IDPost, comment.IDComment, user.IDUser, user.UserName, comment.Content
-        FROM comment 
-        INNER JOIN post_comment
-            ON comment.IDComment = post_comment.IDComment
-        INNER JOIN postsales
-            ON postsales.IDPost = post_comment.IDPost AND postsales.IDPost = ${IDPost}
-        INNER JOIN user
-            ON user.IDUser = comment.IDUser`,
+            `SELECT comment.IDComment, comment.IDUser, comment.CreateAt, comment.UpdateAt, comment.Content, user.UserName FROM comment INNER JOIN user ON comment.IDUser = user.IDUser WHERE PostID = ${IDPost}`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -48,5 +41,53 @@ Comment.create_cmt = ({ IDPost, IDUser, content }) => {
         );
     });
 }
+Comment.update_cmt = ({ IDComment, content }) => {
+    return new Promise((resolve, reject) => {
+        var now = new Date();
+        const nowStr = `${now.getFullYear()}-${
+            now.getMonth() + 1
+        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds}`;
+        db.query(
+            `UPDATE comment SET UpdateAt = '${nowStr}', Content = '${content}' WHERE IDComment = ${IDComment}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+}
+Comment.delete_cmt = ({ IDComment }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `DELETE FROM comment WHERE IDComment = ${IDComment}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+}
+Comment.getInformation = ({ IDComment }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT comment.IDComment, comment.IDUser, comment.CreateAt, comment.UpdateAt, comment.Content, user.UserName FROM comment INNER JOIN user ON comment.IDUser = user.IDUser WHERE IDComment = ${IDComment}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+}
+
+
 
 module.exports = Comment;

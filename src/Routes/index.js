@@ -8,7 +8,7 @@ const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
 
 function route(app) {
     app.use('/', homeRouter);
-    app.use('/api/user', userRoute);
+    app.use('/api/user', isLoginMiddleWare,userRoute);
     app.use('/api/sales', isLoginMiddleWare, salesRoute);
     app.use('/api/login', loginRoute);
     app.use('/api/comment', isLoginMiddleWare,commentRoute);

@@ -19,6 +19,10 @@ router.post('/create', userController.CreateUser);
 // Update Profile
 router.put('/update', userController.UpdateUser);
 
+router.post('/registerSales', userController.RegisterSales);
+
+router.post('/:iduser/requestAccess', userController.RequestAccess);
+
 // Change Pass Word
 router.put('/changepassword', userController.ChangePassword);
 
