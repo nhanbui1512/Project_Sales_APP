@@ -1,4 +1,6 @@
 const userModel = require('../Model/user.model');
+const requestAccess = require('../Model/request.model');
+
 class userController {
     //GET all user
     GetAll(req, res) {
@@ -15,7 +17,7 @@ class userController {
     FindByID(req, response) {
         const ID = req.query.id;
         userModel.findByID(ID, (res) => {
-            response.status(200).json({ data: res });
+            return  response.status(200).json({ data: res });
         });
     }
 
@@ -23,7 +25,7 @@ class userController {
     FindInCludeName(req, response) {
         const userName = req.query.user_name;
         userModel.findIncludeName({ name: userName }, (result) => {
-            response.status(200).json({ data: result });
+            return response.status(200).json({ data: result });
         });
     }
 
@@ -33,17 +35,17 @@ class userController {
         userModel
             .findByName({ userName: userName })
             .then((data) => {
-                response.status(200).json(data);
+                return response.status(200).json(data);
             })
             .catch((err) => {
-                response.status(501).json({ result: null });
+                return response.status(501).json({ result: null });
             });
     }
 
     CreateUser(req, response) {
         const user = req.body;
         userModel.CreateUser({ user: user }, (result) => {
-            response.status(200).json({ result: result });
+            return response.status(200).json({ result: result });
         });
     }
 
@@ -51,17 +53,54 @@ class userController {
         const user = req.body;
         const id = req.query.id;
         userModel.UpdateUser({ user, id }, (result) => {
-            response.status(200).json({ result: result });
+            return response.status(200).json({ result: result });
         });
     }
 
     ChangePassword(req, response) {
         const id = req.query.id;
-        const newPassord = req.body.password;
+        const newPassword = req.body.password;
 
-        userModel.ChangePass({ id: id, newPassword: newPassord }, (result) => {
-            response.status(200).json(result);
+        userModel.ChangePass({ id: id, newPassword: newPassword }, (result) => {
+            return response.status(200).json(result);
         });
+    }
+    RegisterSales(req, response) {
+        const id = req.body.IDUser
+        console.log(id);
+        requestAccess.findbyiduser({ id: id }).then((result) => {
+            if(result.length > 0){
+                return response.status(501).json("Đã đăng kí");
+            }else
+            {
+                requestAccess.registerSales({ id: id }).then((result) => {
+                    return response.status(200).json("Đăng kí thành công");
+                }).catch((err) => {
+                    return response.status(501).json(err);
+                }
+                );
+            }
+        })
+    }
+    RequestAccess(req, response) {
+        let id_user = req.params.iduser;
+
+        let accuser = req.body.access;
+        if(accuser != 0)
+        {
+            return response.status(501).json("Không có quyền");
+        }
+        else
+        {
+            requestAccess.updateAccess(id_user ).then((result) => {
+                userModel.updateAccess({id:id_user})
+                return response.status(200).json("Cấp quyền thành công");
+            }
+            ).catch((err) => {
+                return response.status(501).json(err);
+            }
+            );
+        }
     }
 }
 module.exports = new userController();

@@ -10,6 +10,7 @@ const User = function (user) {
     this.Password = user.PassWord;
 };
 
+
 User.getAll = (result) => {
     db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
         if (!err) {
@@ -122,5 +123,19 @@ User.checkLogin = ({ userName, password }) => {
         });
     });
 };
+
+User.updateAccess = ({ id }) => {   
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE user SET Access = 2 WHERE IDUser = ${id}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("update access success");
+                resolve(res);
+            }
+        });
+    });
+};
+
 
 module.exports = User;

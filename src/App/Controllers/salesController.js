@@ -4,12 +4,12 @@ class salesController {
     GetAll(req, response) {
         postSales.GetAll((result) => {
             if (result) {
-                response.status(200).json({ data: result });
+                return response.status(200).json({ data: result });
                 console.log(req.body.access);
                 console.log(req.body.user_name);
                 console.log(req.body.IDUser)
             } else {
-                response.status(200).json({ datat: [] });
+                return response.status(200).json({ datat: [] });
             }
         });
     }
@@ -19,11 +19,11 @@ class salesController {
         postSales
             .Find({ id })
             .then((res) => {
-                response.status(200).json({ data: res });
+                return response.status(200).json({ data: res });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ message: 'server error' });
+                return response.status(500).json({ message: 'server error' });
             });
     }
 
@@ -39,16 +39,21 @@ class salesController {
             description: req.body.description,
             id_type: req.body.id_type,
         };
-
+        let accuser = req.body.access;
+        if(accuser != 1){
         postSales
             .Create({ post: post })
             .then((res) => {
-                response.status(200).json({ result: true, message: 'create postsales successful' });
+                return response.status(200).json({ result: true, message: 'create postsales successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'Server error' });
+                return response.status(500).json({ result: false, message: 'Server error' });
             });
+        }else
+        {
+            return response.status(500).json({ result: false, message: 'Bạn không có quyền đăng bài' });
+        }
     }
 }
 module.exports = new salesController();
