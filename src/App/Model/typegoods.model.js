@@ -17,4 +17,16 @@ Type.getall = () => {
     });
 };
 
+Type.insert = ({ nameType }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO typegoods (NameType) VALUES ('${nameType}')`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
 module.exports = Type;
