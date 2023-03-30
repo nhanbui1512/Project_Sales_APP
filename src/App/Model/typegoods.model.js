@@ -29,4 +29,19 @@ Type.insert = ({ nameType }) => {
     });
 };
 
+Type.update = ({ nameType, idType }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `UPDATE typegoods SET NameType='${nameType}' WHERE IDType = ${idType}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
 module.exports = Type;
