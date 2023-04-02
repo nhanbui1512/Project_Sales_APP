@@ -25,4 +25,5 @@ Order.Add = ({ orders, idBill }) => {
         resolve({ result: true });
     });
 };
+
 module.exports = Order;

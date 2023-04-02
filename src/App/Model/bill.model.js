@@ -18,4 +18,51 @@ Bill.Add = ({ idUser, total }) => {
         });
     });
 };
+
+Bill.getBillById = ({ billId }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT user.IDUser, user.UserName, user.Email, user.PhoneNumber, user.AvatarPath, bill.IDBill, bill.CreateAt, bill.Total FROM bill JOIN user ON bill.IDUser = user.IDUser AND bill.IDBill = ${billId}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+Bill.getOrdersByBillId = ({ billId }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT orders.IDOrder, orders.IDPost, postsales.Title, postsales.Description, orders.Count, orders.Price FROM bill JOIN orders ON bill.IDBill = orders.IDBill AND bill.IDBill = ${billId} JOIN postsales on postsales.IDPost = orders.IDPost`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+Bill.getOnMonth = ({ month, year }) => {
+    return new Promise((resove, reject) => {
+        db.query(
+            `SELECT user.IDUser, user.UserName, bill.IDBill, bill.CreateAt, bill.Total
+            FROM bill, user
+            WHERE user.IDUser = bill.IDUser AND DATE(bill.CreateAt) >= '${year}-${month}-01' AND DATE(bill.CreateAt) <= '${year}-${month}-31';`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resove(res);
+                }
+            },
+        );
+    });
+};
 module.exports = Bill;

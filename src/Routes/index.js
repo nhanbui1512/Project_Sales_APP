@@ -7,13 +7,14 @@ const typeRoute = require('./typeGoods');
 const orderRoute = require('./orderRoute');
 
 const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
+const adminMidleWare = require('../App/Middleware/adminMidleware');
 
 function route(app) {
     app.use('/api/user', userRoute);
     app.use('/api/sales', isLoginMiddleWare, salesRoute);
     app.use('/api/login', loginRoute);
     app.use('/api/comment', isLoginMiddleWare, commentRoute);
-    app.use('/api/type', typeRoute);
+    app.use('/api/type', isLoginMiddleWare, adminMidleWare, typeRoute);
     app.use('/api/order', isLoginMiddleWare, orderRoute);
     app.use('/', homeRouter);
 }

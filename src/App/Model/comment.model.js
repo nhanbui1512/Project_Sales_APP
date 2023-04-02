@@ -25,12 +25,8 @@ Comment.FindByPost = ({ IDPost }) => {
 };
 Comment.create_cmt = ({ IDPost, IDUser, content }) => {
     return new Promise((resolve, reject) => {
-        var now = new Date();
-        const nowStr = `${now.getFullYear()}-${
-            now.getMonth() + 1
-        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds}`;
         db.query(
-            `INSERT INTO comment (IDUser, CreateAt, UpdateAt, Content ,PostID) VALUES (${IDUser}, '${nowStr}', '${nowStr}', '${content}' , ${IDPost})`,
+            `INSERT INTO comment (IDUser, CreateAt, UpdateAt, Content ,PostID) VALUES (${IDUser}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '${content}' , ${IDPost})`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -40,7 +36,7 @@ Comment.create_cmt = ({ IDPost, IDUser, content }) => {
             },
         );
     });
-}
+};
 Comment.update_cmt = ({ IDComment, content }) => {
     return new Promise((resolve, reject) => {
         var now = new Date();
@@ -48,7 +44,7 @@ Comment.update_cmt = ({ IDComment, content }) => {
             now.getMonth() + 1
         }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds}`;
         db.query(
-            `UPDATE comment SET UpdateAt = '${nowStr}', Content = '${content}' WHERE IDComment = ${IDComment}`,
+            `UPDATE comment SET UpdateAt = CURRENT_TIMESTAMP, Content = '${content}' WHERE IDComment = ${IDComment}`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -58,21 +54,18 @@ Comment.update_cmt = ({ IDComment, content }) => {
             },
         );
     });
-}
+};
 Comment.delete_cmt = ({ IDComment }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `DELETE FROM comment WHERE IDComment = ${IDComment}`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`DELETE FROM comment WHERE IDComment = ${IDComment}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
-}
+};
 Comment.getInformation = ({ IDComment }) => {
     return new Promise((resolve, reject) => {
         db.query(
@@ -86,8 +79,6 @@ Comment.getInformation = ({ IDComment }) => {
             },
         );
     });
-}
-
-
+};
 
 module.exports = Comment;
