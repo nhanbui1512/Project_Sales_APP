@@ -10,28 +10,32 @@ const User = function (user) {
     this.Password = user.PassWord;
 };
 
-
 User.getAll = (result) => {
-    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
-        if (!err) {
-            result(users);
-        } else {
-            result(null);
-        }
-    });
-};
-
-User.findByID = (ID, result) => {
     db.query(
-        `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE IDUser = ${ID}`,
-        (err, user) => {
-            if (err) {
-                result(null);
+        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
+        (err, users) => {
+            if (!err) {
+                result(users);
             } else {
-                result(user);
+                result(null);
             }
         },
     );
+};
+
+User.findByID = ({ ID }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE IDUser = ${ID}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
 };
 
 User.findByName = ({ userName }) => {
@@ -70,7 +74,7 @@ User.CreateUser = ({ user }, result) => {
         if (res != null) {
             db.query(
                 `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
-                VALUES('${user.user_name}','${user.email}','${user.phone_number}','${user.avatar_path}', ${user.access}, '${user.password}')
+                VALUES('${user.user_name}','${user.email}','${user.phone_number}','default_avatar.jpg', ${user.access}, '${user.password}')
                 `,
                 (err) => {
                     if (err) {
@@ -114,28 +118,45 @@ User.ChangePass = ({ id, newPassword }, result) => {
 
 User.checkLogin = ({ userName, password }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
-User.updateAccess = ({ id }) => {   
+User.updateAccess = ({ id }) => {
     return new Promise((resolve, reject) => {
         db.query(`UPDATE user SET Access = 2 WHERE IDUser = ${id}`, (err, res) => {
             if (err) {
                 reject(err);
             } else {
-                console.log("update access success");
+                console.log('update access success');
                 resolve(res);
             }
         });
     });
 };
 
+User.updatePathAvatar = ({ fileName, userId }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
 
 module.exports = User;

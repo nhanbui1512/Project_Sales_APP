@@ -1,14 +1,26 @@
 const userModel = require('../Model/user.model');
 const requestAccess = require('../Model/request.model');
+const StorageAvatar = require('../Services/FileStorage');
 
 class userController {
     //GET all user
-    GetAll(req, res) {
+    GetAll(req, response) {
         userModel.getAll((result) => {
             if (result != null) {
-                res.status(200).json({ data: result });
+                var users = result.map((user) => {
+                    user.AvatarPath = `/uploads/images/${user.AvatarPath}`;
+                    return user;
+                });
+
+                response.status(200).json({ data: users });
+                // for (let i = 0; i < result.length; i++) {
+                //     result[i].AvatarPath = `/uploads/images/${result[i].AvatarPath}`;
+                //     if (i == result.length - 1) {
+                //         response.status(200).json({ data: result });
+                //     }
+                // }
             } else {
-                res.send('khong co du lieu');
+                response.send('khong co du lieu');
             }
         });
     }
@@ -16,9 +28,15 @@ class userController {
     // get user by id
     FindByID(req, response) {
         const ID = req.query.id;
-        userModel.findByID(ID, (res) => {
-            return response.status(200).json({ data: res });
-        });
+        userModel
+            .findByID({ ID })
+            .then((user) => {
+                return response.status(200).json({ data: user });
+            })
+            .catch((err) => {
+                console.log(err);
+                return response.status(204).json({ data: [] });
+            });
     }
 
     // get user  include name
@@ -100,6 +118,62 @@ class userController {
                     return response.status(501).json(err);
                 });
         }
+    }
+
+    ChangeAvatar(req, response) {
+        const file = req.file;
+        const idUser = req.IDUser;
+
+        userModel
+            .findByID({ ID: idUser })
+            .then((user) => {
+                if (user[0].AvatarPath != 'default_avatar.jpg') {
+                    StorageAvatar.DeleteAvatarFile({ fileName: user[0].AvatarPath })
+                        .then((res) => {
+                            userModel
+                                .updatePathAvatar({ fileName: file.filename, userId: idUser })
+                                .then((result) => {
+                                    response
+                                        .status(200)
+                                        .json({
+                                            result: true,
+                                            message: 'update avatar successful',
+                                        });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    response.status(501).json({
+                                        result: false,
+                                        message: 'update avatar is unsuccessful',
+                                    });
+                                });
+                        })
+                        .catch((err) => {
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'fail to delete old avatar' });
+                        });
+                } else {
+                    userModel
+                        .updatePathAvatar({ fileName: file.filename, userId: idUser })
+                        .then((result) => {
+                            response
+                                .status(200)
+                                .json({ result: true, message: 'update avatar successful' });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            response.status(501).json({
+                                result: false,
+                                message: 'update avatar is unsuccessful',
+                            });
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(201).json({ result: false, message: 'not found user by user id ' });
+            });
     }
 }
 module.exports = new userController();
