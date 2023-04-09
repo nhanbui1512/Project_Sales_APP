@@ -35,5 +35,7 @@ class cartController {
                 response.status(500).json({ result: false, message: 'server error' });
             });
     }
+
+    deleteProduct(req, response) {}
 }
 module.exports = new cartController();
