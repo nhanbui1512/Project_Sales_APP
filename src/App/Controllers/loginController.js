@@ -1,5 +1,5 @@
 const userModel = require('../Model/user.model');
-const token_require = require('../../until/token')
+const token_require = require('../../until/token');
 require('dotenv').config();
 
 class loginController {
@@ -11,13 +11,12 @@ class loginController {
         userModel
             .checkLogin({ userName: userName, password: passWord })
             .then((res) => {
-                console.log(res);
                 if (res.length > 0) {
                     const user = res[0];
-                    const token = token_require.GenerateAccpectToken(user)
-                    return response.status(200).json({ message: 'login successful', token: token });
+                    const token = token_require.GenerateAccpectToken(user);
+                    return response.status(200).json({ result: true, message: 'login successful', token: token });
                 } else {
-                    return response.status(200).json({ message: 'username or password is not valid' });
+                    return response.status(200).json({ result: false, message: 'username or password is not valid' });
                 }
             })
             .catch((err) => {

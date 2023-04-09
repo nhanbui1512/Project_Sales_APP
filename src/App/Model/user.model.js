@@ -11,16 +11,13 @@ const User = function (user) {
 };
 
 User.getAll = (result) => {
-    db.query(
-        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
-        (err, users) => {
-            if (!err) {
-                result(users);
-            } else {
-                result(null);
-            }
-        },
-    );
+    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
+        if (!err) {
+            result(users);
+        } else {
+            result(null);
+        }
+    });
 };
 
 User.findByID = ({ ID }) => {
@@ -70,7 +67,6 @@ User.findIncludeName = ({ name }, result) => {
 
 User.CreateUser = ({ user }, result) => {
     db.query(`SELECT * FROM user WHERE UserName = '${user.user_name}'`, (res) => {
-        console.log(res);
         if (res != null) {
             db.query(
                 `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
@@ -118,16 +114,13 @@ User.ChangePass = ({ id, newPassword }, result) => {
 
 User.checkLogin = ({ userName, password }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
 };
 
@@ -146,16 +139,13 @@ User.updateAccess = ({ id }) => {
 
 User.updatePathAvatar = ({ fileName, userId }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
 };
 

@@ -133,12 +133,10 @@ class userController {
                             userModel
                                 .updatePathAvatar({ fileName: file.filename, userId: idUser })
                                 .then((result) => {
-                                    response
-                                        .status(200)
-                                        .json({
-                                            result: true,
-                                            message: 'update avatar successful',
-                                        });
+                                    response.status(200).json({
+                                        result: true,
+                                        message: 'update avatar successful',
+                                    });
                                 })
                                 .catch((err) => {
                                     console.log(err);
@@ -149,17 +147,13 @@ class userController {
                                 });
                         })
                         .catch((err) => {
-                            response
-                                .status(501)
-                                .json({ result: false, message: 'fail to delete old avatar' });
+                            response.status(501).json({ result: false, message: 'fail to delete old avatar' });
                         });
                 } else {
                     userModel
                         .updatePathAvatar({ fileName: file.filename, userId: idUser })
                         .then((result) => {
-                            response
-                                .status(200)
-                                .json({ result: true, message: 'update avatar successful' });
+                            response.status(200).json({ result: true, message: 'update avatar successful' });
                         })
                         .catch((err) => {
                             console.log(err);
