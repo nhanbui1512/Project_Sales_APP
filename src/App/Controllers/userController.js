@@ -105,6 +105,7 @@ class userController {
         let id_user = req.params.iduser;
 
         let accuser = req.access;
+        console.log(accuser);
         if (accuser != 0) {
             return response.status(501).json('Không có quyền');
         } else {

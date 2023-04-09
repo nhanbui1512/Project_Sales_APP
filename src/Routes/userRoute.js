@@ -1,21 +1,10 @@
-const userController = require('../App/Controllers/userController');
-const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
+const userController = require('../app/controllers/userController');
 
-const multer = require('multer');
 const express = require('express');
 const router = express.Router();
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './src/Public/Uploads/Images');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now());
-    },
-});
-
-var upload = multer({ storage: storage });
-
+const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
+const adminMidleWare = require('../App/Middleware/adminMidleware');
 // get all user
 router.get('/getall', userController.GetAll);
 
@@ -30,20 +19,13 @@ router.get('/finduser', userController.FindUserByUserName);
 router.post('/create', userController.CreateUser);
 
 // Update Profile
-router.put('/update', userController.UpdateUser);
+router.put('/update', isLoginMiddleWare,userController.UpdateUser);
 
-router.post('/registerSales', userController.RegisterSales);
+router.post('/registerSales', isLoginMiddleWare,userController.RegisterSales);
 
-router.post('/:iduser/requestAccess', userController.RequestAccess);
+router.post('/:iduser/requestAccess', isLoginMiddleWare,adminMidleWare,userController.RequestAccess);
 
 // Change Pass Word
 router.put('/changepassword', userController.ChangePassword);
-
-router.post(
-    '/changeavatar',
-    isLoginMiddleWare,
-    upload.single('photo'),
-    userController.ChangeAvatar,
-);
 
 module.exports = router;
