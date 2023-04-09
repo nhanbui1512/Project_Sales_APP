@@ -6,7 +6,12 @@ class typeGoodsController {
         typeModel
             .getall()
             .then((res) => {
-                response.status(200).json({ result: true, data: res });
+                var data = res.map((item) => {
+                    item.IconPath = `/uploads/images/typegoods/${item.IconPath}`;
+                    return item;
+                });
+
+                response.status(200).json({ result: true, data: data });
             })
             .catch((err) => {
                 console.log(err);
@@ -16,23 +21,28 @@ class typeGoodsController {
 
     addType(req, response) {
         const nameType = req.body.nameType;
-        typeModel
-            .insert({ nameType })
-            .then((res) => {
-                response.status(200).json(res);
-            })
-            .catch((err) => {
-                console.log(err);
-                response.status(501).json({ result: false, message: 'server error' });
-            });
+        const icon = req.file;
+        console.log(icon);
+        if (icon) {
+            typeModel
+                .insert({ nameType, fileName: icon.filename })
+                .then((res) => {
+                    response
+                        .status(200)
+                        .json({ result: true, insertID: 15, message: 'Add typegoods successful' });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    response.status(501).json({ result: false, message: 'server error' });
+                });
+        } else {
+            response.status(200).json({ result: false, message: 'file not attached' });
+        }
     }
 
     updateType(req, response) {
         const nameType = req.body.nameType;
         const idType = req.query.idType;
-
-        console.log(nameType);
-        console.log(idType);
 
         typeModel
             .update({ nameType: nameType, idType: idType })
@@ -48,6 +58,28 @@ class typeGoodsController {
                 console.log(err);
                 response.status(501).json({ result: false, message: 'server is error' });
             });
+    }
+
+    changeIconType(req, response) {
+        const file = req.file;
+        const idType = req.query.idType;
+
+        if (file && idType) {
+            typeModel
+                .updateIcon({ nameFile: file.filename, idType: idType })
+                .then((res) => {
+                    response.status(200).json({ result: true, message: 'update icon successful' });
+                })
+                .catch((err) => {
+                    response
+                        .status(500)
+                        .json({ result: true, message: 'update icon unsuccessful' });
+                });
+        } else {
+            response
+                .status(400)
+                .json({ result: false, message: 'file is not attached or not found idType' });
+        }
     }
 }
 module.exports = new typeGoodsController();
