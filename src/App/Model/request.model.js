@@ -26,7 +26,6 @@ accessrequest.getallrequest = () => {
                 console.log(err);
                 reject(err);
             } else {
-                console.log('get all request');
                 resolve(res);
             }
         });
@@ -52,8 +51,7 @@ accessrequest.updateAccess = (id) => {
                 console.log(err);
                 reject(err);
             } else {
-                console.log('UPDATE accessrequest SET requestAccess = 0 WHERE IDUser = ' + id);
-                // resolve(res);
+                resolve(res);
             }
         });
     });

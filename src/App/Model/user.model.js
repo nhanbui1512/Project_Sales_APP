@@ -130,7 +130,6 @@ User.updateAccess = ({ id }) => {
             if (err) {
                 reject(err);
             } else {
-                console.log('update access success');
                 resolve(res);
             }
         });

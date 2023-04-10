@@ -85,7 +85,6 @@ class userController {
     }
     RegisterSales(req, response) {
         const id = req.IDUser;
-        console.log(id);
         requestAccess.findbyiduser({ id: id }).then((result) => {
             if (result.length > 0) {
                 return response.status(501).json('Đã đăng kí');
