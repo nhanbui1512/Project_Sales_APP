@@ -1,5 +1,6 @@
 const accessAdmin = (req, response, next) => {
     const access = req.access;
+    console.log(access);
     if (access == 0) {
         next();
     } else {

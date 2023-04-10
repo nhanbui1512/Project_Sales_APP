@@ -53,7 +53,7 @@ accessrequest.updateAccess = (id) => {
                 reject(err);
             } else {
                 console.log('UPDATE accessrequest SET requestAccess = 0 WHERE IDUser = ' + id);
-                // resolve(res);
+                resolve(res);
             }
         });
     });
