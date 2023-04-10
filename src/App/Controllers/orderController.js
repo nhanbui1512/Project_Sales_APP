@@ -1,5 +1,5 @@
 const order = require('../Model/order.model');
-const bill = require('../Model/bill.model');
+const billModel = require('../Model/bill.model');
 
 class orderController {
     Order(req, response) {
@@ -8,7 +8,8 @@ class orderController {
         const total = req.body.total;
         const address = req.body.address;
 
-        bill.Add({ idUser, total, address })
+        billModel
+            .Add({ idUser, total, address })
             .then((res) => {
                 return res.insertId;
             })
@@ -16,15 +17,11 @@ class orderController {
                 order
                     .Add({ orders: orders, idBill: idBill })
                     .then((res) => {
-                        response
-                            .status(200)
-                            .json({ result: true, message: 'Insert Orders is successful' });
+                        response.status(200).json({ result: true, message: 'Insert Orders is successful' });
                     })
                     .catch((err) => {
                         console.log(err);
-                        response
-                            .status(501)
-                            .json({ result: false, message: 'Insert Orders is not successful' });
+                        response.status(501).json({ result: false, message: 'Insert Orders is not successful' });
                     });
             })
             .catch((err) => {
@@ -34,12 +31,14 @@ class orderController {
 
     getOrderByBill(req, response) {
         const billId = req.query.bill_id;
-        bill.getBillById({ billId: billId })
+        billModel
+            .getBillById({ billId: billId })
             .then((res) => {
                 return res[0];
             })
             .then((bill) => {
-                Bill.getOrdersByBillId({ billId: billId })
+                billModel
+                    .getOrdersByBillId({ billId: billId })
                     .then((orders) => {
                         response.status(200).json({
                             bill: bill,
@@ -61,7 +60,8 @@ class orderController {
         const month = req.query.month;
         const year = req.query.year;
 
-        bill.getOnMonth({ month, year })
+        billModel
+            .getOnMonth({ month, year })
             .then((bills) => {
                 response.status(200).json({ bill: bills });
             })

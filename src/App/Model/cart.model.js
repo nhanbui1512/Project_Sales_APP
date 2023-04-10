@@ -9,16 +9,13 @@ const cart = function (cart) {
 
 cart.addProduct = ({ idUser, count, idPost }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `INSERT INTO cart (IDPost,Count,IDUser) VALUES (${idPost},${count},${idUser})`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`INSERT INTO cart (IDPost,Count,IDUser) VALUES (${idPost},${count},${idUser})`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
 };
 
@@ -37,9 +34,9 @@ cart.getCartByUser = ({ idUser }) => {
     });
 };
 
-cart.checksValidProduct = (idUser, idPost) => {
+cart.checksValidProduct = ({ idUser, idPost }) => {
     return new Promise((resolve, reject) => {
-        db.query(`select * from cart where IDUser = ${idUser} and IDPost=${idPost}`, (err, res) => {
+        db.query(`SELECT * FROM cart WHERE IDUser = ${idUser} and IDPost=${idPost}`, (err, res) => {
             if (err) {
                 reject(err);
             } else {
@@ -53,9 +50,9 @@ cart.checksValidProduct = (idUser, idPost) => {
     });
 };
 
-cart.updateCountProduct = ({ idCart, count }) => {
+cart.updateCountProduct = ({ idCart, count, idUser }) => {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE cart SET Count = ${count} WHERE IDCart = ${idCart}`, (err, res) => {
+        db.query(`UPDATE cart SET Count = ${count} WHERE IDCart = ${idCart} AND IDUser = ${idUser}`, (err, res) => {
             if (err) {
                 reject(err);
             } else {
@@ -64,4 +61,29 @@ cart.updateCountProduct = ({ idCart, count }) => {
         });
     });
 };
+
+cart.deleteProduct = ({ idCart }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM cart WHERE IDCart=${idCart};`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
+cart.deleteAllProduct = ({ idUser }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM cart WHERE IDUser=${idUser}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
 module.exports = cart;
