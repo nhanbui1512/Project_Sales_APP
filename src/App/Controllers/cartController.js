@@ -7,18 +7,30 @@ class cartController {
         const count = req.body.count;
         const idUser = req.IDUser;
 
+        // Chưa xong
         cartModel
-            .addProduct({ idPost, count, idUser })
+            .checksValidProduct({ idPost, idUser })
             .then((res) => {
-                response
-                    .status(200)
-                    .json({ result: true, message: 'Insert product to cart successful' });
+                if (res == true) {
+                }
+                cartModel
+                    .addProduct({ idPost, count, idUser })
+                    .then((res) => {
+                        response
+                            .status(200)
+                            .json({ result: true, message: 'Insert product to cart successful' });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        response.status(500).json({
+                            result: false,
+                            message: 'Insert product to cart not successful',
+                        });
+                    });
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: 'Insert product to cart not successful' });
+                response.status(500).json({ result: false, message: 'add Product into cart fail' });
             });
     }
 

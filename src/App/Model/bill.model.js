@@ -1,28 +1,16 @@
 const db = require('../../Config/Db');
 
-const Bill = function (bill) {
+const bill = function (bill) {
     this.IDBill = bill.IDBill;
     this.Total = bill.total;
     this.IDUser = bill.IDUser;
     this.CreateAt = bill.CreateAt;
 };
 
-Bill.Add = ({ idUser, total }) => {
-    return new Promise((resolve, reject) => {
-        db.query(`INSERT INTO bill (IDUser,Total) VALUES (${idUser},${total})`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
-    });
-};
-
-Bill.getBillById = ({ billId }) => {
+bill.Add = ({ idUser, total, address }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT user.IDUser, user.UserName, user.Email, user.PhoneNumber, user.AvatarPath, bill.IDBill, bill.CreateAt, bill.Total FROM bill JOIN user ON bill.IDUser = user.IDUser AND bill.IDBill = ${billId}`,
+            `INSERT INTO bill (IDUser,Total,Address) VALUES (${idUser},${total},'${address}')`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -34,7 +22,22 @@ Bill.getBillById = ({ billId }) => {
     });
 };
 
-Bill.getOrdersByBillId = ({ billId }) => {
+bill.getBillById = ({ billId }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT user.IDUser, user.UserName, user.Email, user.PhoneNumber, user.AvatarPath, bill.IDBill,bill.Address, bill.CreateAt, bill.Total FROM bill JOIN user ON bill.IDUser = user.IDUser AND bill.IDBill = ${billId}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+bill.getOrdersByBillId = ({ billId }) => {
     return new Promise((resolve, reject) => {
         db.query(
             `SELECT orders.IDOrder, orders.IDPost, postsales.Title, postsales.Description, orders.Count, orders.Price FROM bill JOIN orders ON bill.IDBill = orders.IDBill AND bill.IDBill = ${billId} JOIN postsales on postsales.IDPost = orders.IDPost`,
@@ -49,7 +52,7 @@ Bill.getOrdersByBillId = ({ billId }) => {
     });
 };
 
-Bill.getOnMonth = ({ month, year }) => {
+bill.getOnMonth = ({ month, year }) => {
     return new Promise((resove, reject) => {
         db.query(
             `SELECT user.IDUser, user.UserName, bill.IDBill, bill.CreateAt, bill.Total
@@ -65,4 +68,4 @@ Bill.getOnMonth = ({ month, year }) => {
         );
     });
 };
-module.exports = Bill;
+module.exports = bill;

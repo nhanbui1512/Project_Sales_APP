@@ -52,4 +52,16 @@ cart.checksValidProduct = (idUser, idPost) => {
         });
     });
 };
+
+cart.updateCountProduct = ({ idCart, count }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE cart SET Count = ${count} WHERE IDCart = ${idCart}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
 module.exports = cart;

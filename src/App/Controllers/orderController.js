@@ -1,14 +1,14 @@
-const Bill = require('../Model/bill.model');
-const bill = require('../Model/bill.model');
 const order = require('../Model/order.model');
+const bill = require('../Model/bill.model');
 
 class orderController {
     Order(req, response) {
         const orders = req.body.orders;
         const idUser = req.IDUser;
         const total = req.body.total;
+        const address = req.body.address;
 
-        bill.Add({ idUser, total })
+        bill.Add({ idUser, total, address })
             .then((res) => {
                 return res.insertId;
             })
@@ -34,7 +34,7 @@ class orderController {
 
     getOrderByBill(req, response) {
         const billId = req.query.bill_id;
-        Bill.getBillById({ billId: billId })
+        bill.getBillById({ billId: billId })
             .then((res) => {
                 return res[0];
             })
