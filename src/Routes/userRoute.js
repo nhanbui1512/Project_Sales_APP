@@ -1,6 +1,6 @@
 const userController = require('../App/Controllers/userController');
 const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
-
+const accessAdmin = require('../App/Middleware/adminMidleware');
 const multer = require('multer');
 const express = require('express');
 const router = express.Router();
@@ -30,11 +30,11 @@ router.get('/finduser', userController.FindUserByUserName);
 router.post('/create', userController.CreateUser);
 
 // Update Profile
-router.put('/update', userController.UpdateUser);
+router.put('/update',isLoginMiddleWare ,userController.UpdateUser);
 
-router.post('/registerSales', userController.RegisterSales);
+router.post('/registerSales', isLoginMiddleWare,userController.RegisterSales);
 
-router.post('/:iduser/requestAccess', userController.RequestAccess);
+router.post('/:iduser/requestAccess',isLoginMiddleWare,accessAdmin ,userController.RequestAccess);
 
 // Change Pass Word
 router.put('/changepassword', userController.ChangePassword);
