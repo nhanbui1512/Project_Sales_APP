@@ -13,12 +13,6 @@ class userController {
                 });
 
                 response.status(200).json({ data: users });
-                // for (let i = 0; i < result.length; i++) {
-                //     result[i].AvatarPath = `/uploads/images/${result[i].AvatarPath}`;
-                //     if (i == result.length - 1) {
-                //         response.status(200).json({ data: result });
-                //     }
-                // }
             } else {
                 response.send('khong co du lieu');
             }
@@ -30,8 +24,8 @@ class userController {
         const ID = req.query.id;
         userModel
             .findByID({ ID })
-            .then((user) => {
-                return response.status(200).json({ data: user });
+            .then((users) => {
+                return response.status(200).json({ data: users[0] });
             })
             .catch((err) => {
                 console.log(err);
@@ -146,13 +140,17 @@ class userController {
                                 });
                         })
                         .catch((err) => {
-                            response.status(501).json({ result: false, message: 'fail to delete old avatar' });
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'fail to delete old avatar' });
                         });
                 } else {
                     userModel
                         .updatePathAvatar({ fileName: file.filename, userId: idUser })
                         .then((result) => {
-                            response.status(200).json({ result: true, message: 'update avatar successful' });
+                            response
+                                .status(200)
+                                .json({ result: true, message: 'update avatar successful' });
                         })
                         .catch((err) => {
                             console.log(err);

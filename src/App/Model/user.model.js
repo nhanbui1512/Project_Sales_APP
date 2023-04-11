@@ -11,13 +11,17 @@ const User = function (user) {
 };
 
 User.getAll = (result) => {
-    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
-        if (!err) {
-            result(users);
-        } else {
-            result(null);
-        }
-    });
+    db.query(
+        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
+        (err, users) => {
+            if (!err) {
+                result(users);
+            } else {
+                console.log(err);
+                result(null);
+            }
+        },
+    );
 };
 
 User.findByID = ({ ID }) => {
@@ -114,13 +118,16 @@ User.ChangePass = ({ id, newPassword }, result) => {
 
 User.checkLogin = ({ userName, password }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
@@ -138,13 +145,16 @@ User.updateAccess = ({ id }) => {
 
 User.updatePathAvatar = ({ fileName, userId }) => {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
