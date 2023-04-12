@@ -24,16 +24,10 @@ PostSales.GetAll = (result) => {
     );
 };
 
-PostSales.Create = ({ post }) => {
+PostSales.Find = ({ id }) => {
     return new Promise((resolve, reject) => {
-        var now = new Date();
-        const nowStr = `${now.getFullYear()}-${
-            now.getMonth() + 1
-        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-
         db.query(
-            `INSERT INTO postsales (Title, Description, CreateAt, UpdateAt,IDUser, IDType) VALUES (
-            '${post.title}', '${post.description}','${nowStr}','${nowStr}' , ${post.id_user} , ${post.id_type})`,
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDPost = ${id} `,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -45,10 +39,26 @@ PostSales.Create = ({ post }) => {
     });
 };
 
-PostSales.Find = ({ id }) => {
+PostSales.Create = ({ post }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDPost = ${id} `,
+            `INSERT INTO postsales (Title, Description, CreateAt, UpdateAt,IDUser, IDType, Price, Discount) VALUES (
+            '${post.title}', '${post.description}', CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP , ${post.id_user} , ${post.id_type}, ${post.price} ,${post.discount})`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+PostSales.Update = ({ post, idUser }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `UPDATE postsales SET Title = ${post.title} Description = ${post.description} UpdateAt = CURRENT_TIMESTAMP Price = ${post.price} Discount = ${post.discount} WHERE IDPost = ${post.idPost} and IDUser = ${idUser}`,
             (err, res) => {
                 if (err) {
                     reject(err);

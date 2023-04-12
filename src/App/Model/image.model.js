@@ -6,18 +6,27 @@ const Image = function (image) {
     this.postID = image.postID;
 };
 
+Image.getImagesByPost = ({ idPost }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM image WHERE POSTID =${idPost}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
 Image.CreateImage = ({ fileName, postID }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `INSERT INTO image (Path, PostID) VALUES ('${fileName}',${postID})`,
-            (res, err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`INSERT INTO image (Path, PostID) VALUES ('${fileName}',${postID})`, (res, err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
 };
 
@@ -25,14 +34,11 @@ Image.CreateMultiImage = ({ files, postID }) => {
     return new Promise((resolve, reject) => {
         for (let i = 0; i < files.length; i++) {
             const element = files[i].filename;
-            db.query(
-                `INSERT INTO image (Path, PostID) VALUES ('${element}',${postID})`,
-                (err, res) => {
-                    if (err) {
-                        reject(err);
-                    }
-                },
-            );
+            db.query(`INSERT INTO image (Path, PostID) VALUES ('${element}',${postID})`, (err, res) => {
+                if (err) {
+                    reject(err);
+                }
+            });
         }
         resolve(true);
     });

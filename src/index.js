@@ -5,9 +5,11 @@ const port = 3000;
 const app = express();
 const route = require('./routes');
 const db = require('./Config/Db');
+const { lock } = require('./Routes/salesRoute');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/public')));
+
 app.use(
     express.urlencoded({
         extended: true,

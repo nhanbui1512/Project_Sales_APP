@@ -79,7 +79,7 @@ class cartController {
     }
 
     deleteProduct(req, response) {
-        const idCart = req.query.idcart;
+        const idCart = req.IDUser;
         cartModel
             .deleteProduct({ idCart: idCart })
             .then((res) => {
@@ -92,7 +92,7 @@ class cartController {
     }
 
     deleteAllProduct(req, response) {
-        const idUser = req.query.idUser;
+        const idUser = req.IDUser;
 
         cartModel
             .deleteAllProduct({ idUser })

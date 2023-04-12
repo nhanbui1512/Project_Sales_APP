@@ -6,7 +6,27 @@ class salesController {
     GetAll(req, response) {
         postSales.GetAll((result) => {
             if (result) {
-                return response.status(200).json({ data: result });
+                var newResult = [];
+
+                for (let i = 0; i < result.length; i++) {
+                    const element = result[i];
+                    Image.getImagesByPost({ idPost: element.IDPost })
+                        .then((images) => {
+                            images = images.map((image) => {
+                                image.Path = `/uploads/images/${image.Path}`;
+                                return image;
+                            });
+                            element.images = images;
+                            return element;
+                        })
+                        .then((element) => {
+                            newResult.push(element);
+                        });
+                }
+
+                setTimeout(() => {
+                    return response.status(200).json({ data: newResult });
+                }, 500);
             } else {
                 return response.status(200).json({ datat: [] });
             }
@@ -36,6 +56,8 @@ class salesController {
             title: req.body.title,
             description: req.body.description,
             id_type: req.body.id_type,
+            price: req.body.price,
+            discount: req.body.discount,
         };
         let accuser = req.access;
         if (accuser != 1) {
@@ -61,6 +83,29 @@ class salesController {
         } else {
             return response.status(500).json({ result: false, message: 'Bạn không có quyền đăng bài' });
         }
+    }
+
+    UpdatePost(req, response) {
+        const idUser = req.IDUser;
+
+        const post = {
+            idPost: req.body.idPost,
+            title: req.body.title,
+            description: req.body.description,
+            price: req.body.price,
+            discount: req.body.discount,
+        };
+
+        postSales
+            .Update({ post, idUser })
+            .then((res) => {
+                console.log(res);
+                response.status(200).json({ result: true, message: 'update post successful' });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(501).json({ result: false, message: 'update post not successful' });
+            });
     }
 
     // Delete a post
