@@ -127,5 +127,17 @@ class salesController {
                 response.status(501).json({ result: false, message: 'Delete images of post is not successful' });
             });
     }
+
+    GetRand(req, response) {
+        const randNumber = req.query.rand_number;
+        PostSales.getRand({ randNumber })
+            .then((posts) => {
+                response.status(200).json({ result: true, data: posts });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(401).json({ result: false, message: err.sqlMessage });
+            });
+    }
 }
 module.exports = new salesController();

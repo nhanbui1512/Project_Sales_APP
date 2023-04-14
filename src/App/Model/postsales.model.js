@@ -12,7 +12,7 @@ const PostSales = function (post) {
 
 PostSales.GetAll = (result) => {
     db.query(
-        'SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType',
+        'SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY CreateAt DESC',
         (err, res) => {
             if (err) {
                 console.log(err);
@@ -75,6 +75,18 @@ PostSales.Delete = ({ postID }) => {
         db.query(`DELETE FROM postsales WHERE IDPost = ${postID}`, (err, res) => {
             if (err) reject(err);
             else resolve(res);
+        });
+    });
+};
+
+PostSales.getRand = ({ randNumber }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM postsales ORDER BY RAND() LIMIT ${randNumber}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
         });
     });
 };
