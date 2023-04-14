@@ -14,11 +14,11 @@ const isLoginMiddleWare = (req, response, next) => {
             next();
         } catch (error) {
             console.log(error);
-            response.status(200).json({ res: 'Can Phai Login' });
+            response.status(200).json({ result: false, message: 'Can Phai Login' });
             return;
         }
     } else {
-        response.status(200).json({ res: 'Can Phai Login' });
+        response.status(200).json({ result: false, message: 'Can Phai Login' });
         return;
     }
 };

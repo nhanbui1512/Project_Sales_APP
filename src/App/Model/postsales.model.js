@@ -81,13 +81,16 @@ PostSales.Delete = ({ postID }) => {
 
 PostSales.getRand = ({ randNumber }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM postsales ORDER BY RAND() LIMIT ${randNumber}`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY RAND() LIMIT ${randNumber}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 

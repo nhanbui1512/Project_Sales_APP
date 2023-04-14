@@ -25,7 +25,7 @@ class salesController {
                 }
 
                 setTimeout(() => {
-                    return response.status(200).json({ data: newResult });
+                    return response.status(200).json({ result: true, data: newResult });
                 }, 500);
             } else {
                 return response.status(200).json({ datat: [] });
@@ -73,7 +73,9 @@ class salesController {
                             response.status(200).json({ result: true, message: 'Successful' });
                         })
                         .catch((err) => {
-                            response.status(501).json({ result: false, message: 'Create Image is not successful' });
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'Create Image is not successful' });
                         });
                 })
                 .catch((err) => {
@@ -81,7 +83,9 @@ class salesController {
                     return response.status(500).json({ result: false, message: 'Server error' });
                 });
         } else {
-            return response.status(500).json({ result: false, message: 'Bạn không có quyền đăng bài' });
+            return response
+                .status(500)
+                .json({ result: false, message: 'Bạn không có quyền đăng bài' });
         }
     }
 
@@ -115,16 +119,22 @@ class salesController {
             .then(() => {
                 PostSales.Delete({ postID: postID })
                     .then(() => {
-                        response.status(200).json({ result: true, message: 'Delete post successful' });
+                        response
+                            .status(200)
+                            .json({ result: true, message: 'Delete post successful' });
                     })
                     .catch((err) => {
                         console.log(err);
-                        response.status(501).json({ result: false, message: 'Delete post not successful' });
+                        response
+                            .status(501)
+                            .json({ result: false, message: 'Delete post not successful' });
                     });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(501).json({ result: false, message: 'Delete images of post is not successful' });
+                response
+                    .status(501)
+                    .json({ result: false, message: 'Delete images of post is not successful' });
             });
     }
 
@@ -132,7 +142,31 @@ class salesController {
         const randNumber = req.query.rand_number;
         PostSales.getRand({ randNumber })
             .then((posts) => {
-                response.status(200).json({ result: true, data: posts });
+                if (posts) {
+                    var newResult = [];
+
+                    for (let i = 0; i < posts.length; i++) {
+                        const element = posts[i];
+                        Image.getImagesByPost({ idPost: element.IDPost })
+                            .then((images) => {
+                                images = images.map((image) => {
+                                    image.Path = `/uploads/images/${image.Path}`;
+                                    return image;
+                                });
+                                element.images = images;
+                                return element;
+                            })
+                            .then((element) => {
+                                newResult.push(element);
+                            });
+                    }
+
+                    setTimeout(() => {
+                        return response.status(200).json({ result: true, data: newResult });
+                    }, 500);
+                } else {
+                    return response.status(200).json({ datat: [] });
+                }
             })
             .catch((err) => {
                 console.log(err);
