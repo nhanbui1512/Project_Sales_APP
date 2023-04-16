@@ -16,6 +16,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 router.get('/getall', typeGoodsController.getAll);
+router.get('/gettype', typeGoodsController.getByID);
 router.post('/add', upload.single('icon'), typeGoodsController.addType);
 router.put('/update', typeGoodsController.updateType);
 router.put('/changeicon', upload.single('icon'), typeGoodsController.changeIconType);

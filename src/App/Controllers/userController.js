@@ -1,6 +1,7 @@
 const userModel = require('../Model/user.model');
 const requestAccess = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
+const User = require('../Model/user.model');
 
 class userController {
     //GET all user
@@ -13,12 +14,6 @@ class userController {
                 });
 
                 response.status(200).json({ data: users });
-                // for (let i = 0; i < result.length; i++) {
-                //     result[i].AvatarPath = `/uploads/images/${result[i].AvatarPath}`;
-                //     if (i == result.length - 1) {
-                //         response.status(200).json({ data: result });
-                //     }
-                // }
             } else {
                 response.send('khong co du lieu');
             }
@@ -146,13 +141,17 @@ class userController {
                                 });
                         })
                         .catch((err) => {
-                            response.status(501).json({ result: false, message: 'fail to delete old avatar' });
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'fail to delete old avatar' });
                         });
                 } else {
                     userModel
                         .updatePathAvatar({ fileName: file.filename, userId: idUser })
                         .then((result) => {
-                            response.status(200).json({ result: true, message: 'update avatar successful' });
+                            response
+                                .status(200)
+                                .json({ result: true, message: 'update avatar successful' });
                         })
                         .catch((err) => {
                             console.log(err);
@@ -166,6 +165,18 @@ class userController {
             .catch((err) => {
                 console.log(err);
                 response.status(201).json({ result: false, message: 'not found user by user id ' });
+            });
+    }
+
+    getMyProfile(req, response) {
+        const idUser = req.IDUser;
+        User.findByID({ ID: idUser })
+            .then((res) => {
+                response.status(200).json({ result: true, data: res[0] });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
 }

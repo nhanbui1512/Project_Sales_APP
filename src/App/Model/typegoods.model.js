@@ -63,4 +63,16 @@ Type.updateIcon = ({ nameFile, idType }) => {
     });
 };
 
+Type.getByID = ({ idType }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * from typegoods WHERE IDType = ${idType}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
 module.exports = Type;

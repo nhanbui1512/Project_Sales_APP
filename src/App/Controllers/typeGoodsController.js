@@ -81,5 +81,22 @@ class typeGoodsController {
                 .json({ result: false, message: 'file is not attached or not found idType' });
         }
     }
+
+    getByID(req, response) {
+        const idType = req.query.id_type;
+        typeModel
+            .getByID({ idType })
+            .then((res) => {
+                if (res.length > 0) {
+                    response.status(200).json({ result: true, data: res[0] });
+                } else {
+                    response.status(401).json({ result: false, message: 'not found typeGood' });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(501).json({ result: false, message: 'Server is error' });
+            });
+    }
 }
 module.exports = new typeGoodsController();

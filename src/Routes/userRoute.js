@@ -20,6 +20,8 @@ var upload = multer({ storage: storage });
 // get all user
 router.get('/getall', userController.GetAll);
 
+router.get('/myprofile', isLoginMiddleWare, userController.getMyProfile);
+
 // Find User by ID
 router.get('/find', userController.FindByID);
 
@@ -40,6 +42,11 @@ router.post('/:iduser/requestAccess', isLoginMiddleWare, accessAdmin, userContro
 // Change Pass Word
 router.put('/changepassword', userController.ChangePassword);
 
-router.post('/changeavatar', isLoginMiddleWare, upload.single('photo'), userController.ChangeAvatar);
+router.post(
+    '/changeavatar',
+    isLoginMiddleWare,
+    upload.single('photo'),
+    userController.ChangeAvatar,
+);
 
 module.exports = router;

@@ -16,7 +16,10 @@ class cartController {
                     cartModel
                         .addProduct({ idPost, count, idUser })
                         .then((res) => {
-                            response.status(200).json({ result: true, message: 'Insert product to cart successful' });
+                            response.status(200).json({
+                                result: true,
+                                message: 'Insert product to cart successful',
+                            });
                         })
                         .catch((err) => {
                             console.log(err);
@@ -30,15 +33,19 @@ class cartController {
                     var oldCount = res[0].Count;
                     var newCount = oldCount + count;
                     cartModel
-                        .updateCountProduct({ idCart, count: newCount })
+                        .updateCountProduct({ idCart, count: newCount, idUser })
                         .then((res) => {
-                            response.status(200).json({ result: true, message: 'Insert product to cart successful' });
+                            response.status(200).json({
+                                result: true,
+                                message: 'Insert product to cart successful',
+                            });
                         })
                         .catch((err) => {
                             console.log(err);
-                            response
-                                .status(500)
-                                .json({ result: false, message: 'Insert product to cart unsuccessful' });
+                            response.status(500).json({
+                                result: false,
+                                message: 'Insert product to cart unsuccessful',
+                            });
                         });
                 }
             })
@@ -54,7 +61,7 @@ class cartController {
             .getCartByUser({ idUser })
 
             .then((res) => {
-                response.status(200).json({ data: res });
+                response.status(200).json({ result: true, data: res });
             })
             .catch((err) => {
                 console.log(err);
@@ -70,11 +77,15 @@ class cartController {
         cartModel
             .updateCountProduct({ idCart, count, idUser })
             .then((res) => {
-                response.status(200).json({ result: true, message: 'Update count product successful' });
+                response
+                    .status(200)
+                    .json({ result: true, message: 'Update count product successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'Update count product unsuccessful' });
+                response
+                    .status(500)
+                    .json({ result: false, message: 'Update count product unsuccessful' });
             });
     }
 
@@ -83,11 +94,15 @@ class cartController {
         cartModel
             .deleteProduct({ idCart: idCart })
             .then((res) => {
-                response.status(200).json({ result: true, message: 'Delete product in cart successful' });
+                response
+                    .status(200)
+                    .json({ result: true, message: 'Delete product in cart successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'Delete product in cart unsuccessful' });
+                response
+                    .status(500)
+                    .json({ result: false, message: 'Delete product in cart unsuccessful' });
             });
     }
 
@@ -98,15 +113,17 @@ class cartController {
             .deleteAllProduct({ idUser })
             .then((res) => {
                 console.log(res);
-                response
-                    .status(200)
-                    .json({ result: true, message: `Delete All product in cart of user: ${idUser} successful` });
+                response.status(200).json({
+                    result: true,
+                    message: `Delete All product in cart of user: ${idUser} successful`,
+                });
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: `Delete All product in cart of user: ${idUser} unsuccessful` });
+                response.status(500).json({
+                    result: false,
+                    message: `Delete All product in cart of user: ${idUser} unsuccessful`,
+                });
             });
     }
 }
