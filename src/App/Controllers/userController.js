@@ -56,10 +56,43 @@ class userController {
     }
 
     CreateUser(req, response) {
-        const user = req.body;
-        userModel.CreateUser({ user: user }, (result) => {
-            return response.status(200).json({ result: result });
-        });
+        const user = {
+            userName: req.body.user_name,
+            email: req.body.email,
+            password: req.body.password,
+            phoneNumber: req.body.phone_number,
+            access: req.body.access,
+        };
+
+        User.findByName({ userName: user.userName })
+            .then((users) => {
+                if (users.length > 0) {
+                    response.status(400).json({
+                        result: false,
+                        message: 'account already exists',
+                    });
+                } else {
+                    User.CreateUser({ user })
+                        .then((res) => {
+                            console.log(res);
+                            response.status(200).json({
+                                result: true,
+                                message: 'Create account is successful',
+                                userID: res.insertId,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            response
+                                .status(501)
+                                .json({ result: false, message: 'Create account is unsuccessful' });
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(501).json({ result: false, message: 'server is error' });
+            });
     }
 
     UpdateUser(req, response) {
@@ -71,13 +104,29 @@ class userController {
     }
 
     ChangePassword(req, response) {
-        const id = req.query.id;
+        const id = req.IDUser;
         const newPassword = req.body.password;
 
-        userModel.ChangePass({ id: id, newPassword: newPassword }, (result) => {
-            return response.status(200).json(result);
-        });
+        userModel
+            .ChangePass({ id, newPassword })
+            .then((res) => {
+                if (res.changedRows == 1) {
+                    response
+                        .status(200)
+                        .json({ result: true, message: 'Change password is successful' });
+                } else {
+                    response.status(400).json({
+                        result: false,
+                        message: 'The new password is the same as the old password',
+                    });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'server is error' });
+            });
     }
+
     RegisterSales(req, response) {
         const id = req.IDUser;
         requestAccess.findbyiduser({ id: id }).then((result) => {
@@ -177,6 +226,42 @@ class userController {
             .catch((err) => {
                 console.log(err);
                 response.status(500).json({ result: false, message: 'Server is error' });
+            });
+    }
+
+    registerAccount(req, response) {
+        const user = {
+            userName: req.body.user_name,
+            email: req.body.email,
+            password: req.body.password,
+            phoneNumber: req.body.phone_number,
+            access: 1,
+        };
+
+        User.findByName({ userName: user.userName })
+            .then((users) => {
+                if (users.length > 0) {
+                    response.status(400).json({ result: false, message: 'account already exists' });
+                } else {
+                    User.CreateUser({ user })
+                        .then((res) => {
+                            response.status(200).json({
+                                result: true,
+                                message: 'register account successful',
+                                userID: res.insertId,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            response
+                                .status(500)
+                                .json({ result: false, message: 'register user is unsuccessful' });
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(501).json({ result: false, message: 'server is error' });
             });
     }
 }

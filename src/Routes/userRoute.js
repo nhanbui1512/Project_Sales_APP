@@ -30,7 +30,7 @@ router.get('/findname', userController.FindInCludeName);
 
 router.get('/finduser', userController.FindUserByUserName);
 // Create User
-router.post('/create', userController.CreateUser);
+router.post('/create', isLoginMiddleWare, accessAdmin, userController.CreateUser);
 
 // Update Profile
 router.put('/update', userController.UpdateUser);
@@ -40,7 +40,7 @@ router.post('/registerSales', isLoginMiddleWare, userController.RegisterSales);
 router.post('/:iduser/requestAccess', isLoginMiddleWare, accessAdmin, userController.RequestAccess);
 
 // Change Pass Word
-router.put('/changepassword', userController.ChangePassword);
+router.put('/changepassword', isLoginMiddleWare, userController.ChangePassword);
 
 router.post(
     '/changeavatar',
@@ -48,5 +48,7 @@ router.post(
     upload.single('photo'),
     userController.ChangeAvatar,
 );
+
+router.post('/register', userController.registerAccount);
 
 module.exports = router;

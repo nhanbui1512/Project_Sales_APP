@@ -11,13 +11,16 @@ const User = function (user) {
 };
 
 User.getAll = (result) => {
-    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
-        if (!err) {
-            result(users);
-        } else {
-            result(null);
-        }
-    });
+    db.query(
+        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
+        (err, users) => {
+            if (!err) {
+                result(users);
+            } else {
+                result(null);
+            }
+        },
+    );
 };
 
 User.findByID = ({ ID }) => {
@@ -65,25 +68,20 @@ User.findIncludeName = ({ name }, result) => {
     );
 };
 
-User.CreateUser = ({ user }, result) => {
-    db.query(`SELECT * FROM user WHERE UserName = '${user.user_name}'`, (res) => {
-        if (res != null) {
-            db.query(
-                `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
-                VALUES('${user.user_name}','${user.email}','${user.phone_number}','default_avatar.jpg', ${user.access}, '${user.password}')
-                `,
-                (err) => {
-                    if (err) {
-                        result(false);
-                    } else {
-                        console.log('create successful');
-                        result(true);
-                    }
-                },
-            );
-        } else {
-            result(false);
-        }
+User.CreateUser = ({ user }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `INSERT INTO user (UserName, Email, PhoneNumber,AvatarPath, Access,PassWord) 
+            VALUES('${user.userName}','${user.email}','${user.phoneNumber}','default_avatar.jpg', ${user.access}, '${user.password}')
+            `,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
@@ -101,26 +99,30 @@ User.UpdateUser = ({ user, id }, result) => {
     );
 };
 
-User.ChangePass = ({ id, newPassword }, result) => {
-    db.query(`UPDATE user SET Password = '${newPassword}' WHERE IDUser = ${id}`, (err) => {
-        if (err) {
-            console.log(err);
-            result(false);
-        } else {
-            result(true);
-        }
-    });
-};
-
-User.checkLogin = ({ userName, password }) => {
+User.ChangePass = ({ id, newPassword }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
+        db.query(`UPDATE user SET Password = '${newPassword}' WHERE IDUser = ${id}`, (err, res) => {
             if (err) {
                 reject(err);
             } else {
                 resolve(res);
             }
         });
+    });
+};
+
+User.checkLogin = ({ userName, password }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
@@ -138,13 +140,16 @@ User.updateAccess = ({ id }) => {
 
 User.updatePathAvatar = ({ fileName, userId }) => {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
