@@ -17,15 +17,20 @@ class orderController {
                 order
                     .Add({ orders: orders, idBill: idBill })
                     .then((res) => {
-                        response.status(200).json({ result: true, message: 'Insert Orders is successful' });
+                        response
+                            .status(200)
+                            .json({ result: true, message: 'Insert Orders is successful' });
                     })
                     .catch((err) => {
                         console.log(err);
-                        response.status(501).json({ result: false, message: 'Insert Orders is not successful' });
+                        response
+                            .status(501)
+                            .json({ result: false, message: 'Insert Orders is not successful' });
                     });
             })
             .catch((err) => {
-                return response.status(501).json(err);
+                console.log(err);
+                return response.status(501).json({ result: false, message: 'Server is error' });
             });
     }
 
