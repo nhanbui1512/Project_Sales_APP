@@ -64,7 +64,7 @@ cart.updateCountProduct = ({ idCart, count, idUser }) => {
 
 cart.deleteProduct = ({ idCart }) => {
     return new Promise((resolve, reject) => {
-        db.query(`DELETE FROM cart WHERE IDCart=${idCart};`, (err, res) => {
+        db.query(`DELETE FROM cart WHERE IDCart=${idCart}`, (err, res) => {
             if (err) {
                 reject(err);
             } else {

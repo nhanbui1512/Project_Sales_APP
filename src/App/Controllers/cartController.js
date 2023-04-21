@@ -70,39 +70,36 @@ class cartController {
     }
 
     updateCountProduct(req, response) {
-        const idCart = req.body.idCart;
-        const count = req.body.count;
+        const idCart = Number(req.query.id_cart);
+        const count = Number(req.query.count);
         const idUser = req.IDUser;
 
         cartModel
             .updateCountProduct({ idCart, count, idUser })
             .then((res) => {
-                response
-                    .status(200)
-                    .json({ result: true, message: 'Update count product successful' });
+                console.log(res);
+                if (res.changedRows > 0) {
+                    response.status(200).json({ result: true, message: 'Update count product successful' });
+                } else {
+                    response.status(200).json({ result: false, message: 'Update count product unsuccessful' });
+                }
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: 'Update count product unsuccessful' });
+                response.status(500).json({ result: false, message: 'Update count product unsuccessful' });
             });
     }
 
     deleteProduct(req, response) {
-        const idCart = req.IDUser;
+        const idCart = req.query.id_cart;
         cartModel
             .deleteProduct({ idCart: idCart })
             .then((res) => {
-                response
-                    .status(200)
-                    .json({ result: true, message: 'Delete product in cart successful' });
+                response.status(200).json({ result: true, message: 'Delete product in cart successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: 'Delete product in cart unsuccessful' });
+                response.status(500).json({ result: false, message: 'Delete product in cart unsuccessful' });
             });
     }
 

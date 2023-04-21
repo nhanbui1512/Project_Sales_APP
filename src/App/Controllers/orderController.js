@@ -5,8 +5,12 @@ class orderController {
     Order(req, response) {
         const orders = req.body.orders;
         const idUser = req.IDUser;
-        const total = req.body.total;
+        var total = 0;
         const address = req.body.address;
+
+        orders.map((order) => {
+            total += order.count * order.price;
+        });
 
         billModel
             .Add({ idUser, total, address })
@@ -17,15 +21,11 @@ class orderController {
                 order
                     .Add({ orders: orders, idBill: idBill })
                     .then((res) => {
-                        response
-                            .status(200)
-                            .json({ result: true, message: 'Insert Orders is successful' });
+                        response.status(200).json({ result: true, message: 'Insert Orders is successful' });
                     })
                     .catch((err) => {
                         console.log(err);
-                        response
-                            .status(501)
-                            .json({ result: false, message: 'Insert Orders is not successful' });
+                        response.status(501).json({ result: false, message: 'Insert Orders is not successful' });
                     });
             })
             .catch((err) => {
@@ -46,7 +46,14 @@ class orderController {
                     .getOrdersByBillId({ billId: billId })
                     .then((orders) => {
                         response.status(200).json({
-                            bill: bill,
+                            bill: {
+                                IDBill: bill.IDBill,
+                                UserName: bill.UserName,
+                                Email: bill.Email,
+                                Address: bill.Address,
+                                CreateAt: bill.CreateAt,
+                                Total: bill.Total,
+                            },
                             orders: orders,
                         });
                     })
