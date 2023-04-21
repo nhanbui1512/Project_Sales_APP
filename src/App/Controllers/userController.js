@@ -1,7 +1,6 @@
 const userModel = require('../Model/user.model');
-const requestAccess = require('../Model/request.model');
+const requestAccessModel = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
-const User = require('../Model/user.model');
 
 class userController {
     //GET all user
@@ -64,7 +63,8 @@ class userController {
             access: req.body.access,
         };
 
-        User.findByName({ userName: user.userName })
+        userModel
+            .findByName({ userName: user.userName })
             .then((users) => {
                 if (users.length > 0) {
                     response.status(400).json({
@@ -72,7 +72,8 @@ class userController {
                         message: 'account already exists',
                     });
                 } else {
-                    User.CreateUser({ user })
+                    userModel
+                        .CreateUser({ user })
                         .then((res) => {
                             console.log(res);
                             response.status(200).json({
@@ -83,9 +84,7 @@ class userController {
                         })
                         .catch((err) => {
                             console.log(err);
-                            response
-                                .status(501)
-                                .json({ result: false, message: 'Create account is unsuccessful' });
+                            response.status(501).json({ result: false, message: 'Create account is unsuccessful' });
                         });
                 }
             })
@@ -105,62 +104,95 @@ class userController {
 
     ChangePassword(req, response) {
         const id = req.IDUser;
-        const newPassword = req.body.password;
+        const oldPassword = req.body.old_password;
+        const newPassword = req.body.new_password;
 
         userModel
-            .ChangePass({ id, newPassword })
+            .CheckPassword({ idUser: id, password: oldPassword })
             .then((res) => {
-                if (res.changedRows == 1) {
-                    response
-                        .status(200)
-                        .json({ result: true, message: 'Change password is successful' });
+                if (res.result == true) {
+                    userModel
+                        .ChangePass({ id, newPassword })
+                        .then((res) => {
+                            if (res.changedRows > 0) {
+                                response.status(200).json({ result: true, message: 'Update password is successful' });
+                            } else {
+                                response
+                                    .status(400)
+                                    .json({ result: false, message: 'Update password is unsuccessful' });
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            response.status(500).json({ result: false, message: 'Server is error' });
+                        });
                 } else {
-                    response.status(400).json({
-                        result: false,
-                        message: 'The new password is the same as the old password',
-                    });
+                    response.status(400).json({ result: false, message: 'old password is wrong' });
                 }
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'server is error' });
+                response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
 
+    // Gửi đơn yêu cầu trở thành nhà bán hàng
     RegisterSales(req, response) {
-        const id = req.IDUser;
-        requestAccess.findbyiduser({ id: id }).then((result) => {
-            if (result.length > 0) {
-                return response.status(501).json('Đã đăng kí');
-            } else {
-                requestAccess
-                    .registerSales({ id: id })
-                    .then((result) => {
-                        return response.status(200).json('Đăng kí thành công');
-                    })
-                    .catch((err) => {
-                        return response.status(501).json(err);
-                    });
-            }
-        });
-    }
-    RequestAccess(req, response) {
-        let id_user = req.params.iduser;
+        const form = {
+            nameShop: req.body.nameShop,
+            addressShop: req.body.addressShop,
+            email: req.body.email,
+            phoneNumber: req.body.phoneNumber,
+        };
 
-        let accuser = req.access;
-        if (accuser != 0) {
-            return response.status(501).json('Không có quyền');
-        } else {
-            requestAccess
-                .updateAccess(id_user)
-                .then((result) => {
-                    userModel.updateAccess({ id: id_user });
-                    return response.status(200).json('Cấp quyền thành công');
-                })
-                .catch((err) => {
-                    return response.status(501).json(err);
-                });
-        }
+        const idUser = req.IDUser;
+
+        requestAccessModel
+            .FindRequestByIDUser({ IDUser: idUser })
+            .then((users) => {
+                if (users.length > 0) {
+                    // đã tồn tại đơn yêu cầu
+                    response.status(400).json({ result: false, message: 'Đã tồn tại đơn' });
+                } else {
+                    requestAccessModel
+                        .AddRequest({
+                            idUser: idUser,
+                            nameShop: form.nameShop,
+                            addressShop: form.addressShop,
+                            email: form.email,
+                            phoneNumber: form.phoneNumber,
+                        })
+                        .then((res) => {
+                            response.status(200).json({ result: true, message: 'Add request is successful' });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            response.status(500).json({ result: false, message: 'Add request is unsuccessful' });
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server is error' });
+            });
+    }
+
+    // Duyệt đơn
+    AcceptSalesAccount(req, response) {
+        const idRequest = req.query.id_request;
+        requestAccessModel
+            .UpdateStatus({ IDRequest: idRequest })
+            .then((res) => {
+                if (res.changedRows == 0) {
+                    response.status(200).json({ result: false, message: 'Update Request is unsuccessful' });
+                } else {
+                    response.status(200).json({ result: true, message: 'Update Request is successful' });
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server is error' });
+            });
     }
 
     ChangeAvatar(req, response) {
@@ -190,17 +222,13 @@ class userController {
                                 });
                         })
                         .catch((err) => {
-                            response
-                                .status(501)
-                                .json({ result: false, message: 'fail to delete old avatar' });
+                            response.status(501).json({ result: false, message: 'fail to delete old avatar' });
                         });
                 } else {
                     userModel
                         .updatePathAvatar({ fileName: file.filename, userId: idUser })
                         .then((result) => {
-                            response
-                                .status(200)
-                                .json({ result: true, message: 'update avatar successful' });
+                            response.status(200).json({ result: true, message: 'update avatar successful' });
                         })
                         .catch((err) => {
                             console.log(err);
@@ -219,7 +247,8 @@ class userController {
 
     getMyProfile(req, response) {
         const idUser = req.IDUser;
-        User.findByID({ ID: idUser })
+        userModel
+            .findByID({ ID: idUser })
             .then((res) => {
                 response.status(200).json({ result: true, data: res[0] });
             })
@@ -238,12 +267,14 @@ class userController {
             access: 1,
         };
 
-        User.findByName({ userName: user.userName })
+        userModel
+            .findByName({ userName: user.userName })
             .then((users) => {
                 if (users.length > 0) {
                     response.status(400).json({ result: false, message: 'account already exists' });
                 } else {
-                    User.CreateUser({ user })
+                    userModel
+                        .CreateUser({ user })
                         .then((res) => {
                             response.status(200).json({
                                 result: true,
@@ -253,15 +284,25 @@ class userController {
                         })
                         .catch((err) => {
                             console.log(err);
-                            response
-                                .status(500)
-                                .json({ result: false, message: 'register user is unsuccessful' });
+                            response.status(500).json({ result: false, message: 'register user is unsuccessful' });
                         });
                 }
             })
             .catch((err) => {
                 console.log(err);
                 response.status(501).json({ result: false, message: 'server is error' });
+            });
+    }
+
+    getAllRequest(req, response) {
+        requestAccessModel
+            .GetAllRequest()
+            .then((res) => {
+                response.status(200).json({ data: res });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
 }

@@ -2,28 +2,19 @@ const db = require('../../Config/Db');
 
 const accessrequest = function (accessrequest) {
     this.IDUser = accessrequest.IDUser;
-    this.requestAccess = accessrequest.requestAccess;
-    this.ID_access = accessrequest.ID_access;
+    this.IDRequest = accessrequest.IDRequest;
+    this.NameShop = accessrequest.NameShop;
+    this.AddressShop = accessrequest.AddressShop;
+    this.Email = accessrequest.Email;
+    this.PhoneNumber = accessrequest.PhoneNumber;
+    this.Status = accessrequest.Status;
+    this.CreateAt = accessrequest.CreateAt;
 };
 
-accessrequest.registerSales = ({ id }) => {
+accessrequest.GetAllRequest = () => {
     return new Promise((resolve, reject) => {
-        db.query(`INSERT INTO accessrequest(IDUser,requestAccess) VALUES ('${id}',1)`, (err, res) => {
+        db.query(`SELECT * FROM accessrequest WHERE Status = false ORDER BY CreateAt DESC`, (err, res) => {
             if (err) {
-                console.log(err);
-                reject(err);
-            } else {
-                // console.log('success');
-                resolve(res);
-            }
-        });
-    });
-};
-accessrequest.getallrequest = () => {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM accessrequest`, (err, res) => {
-            if (err) {
-                console.log(err);
                 reject(err);
             } else {
                 resolve(res);
@@ -31,24 +22,39 @@ accessrequest.getallrequest = () => {
         });
     });
 };
-accessrequest.findbyiduser = ({ id }) => {
+
+accessrequest.AddRequest = ({ idUser, nameShop, addressShop, email, phoneNumber }) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM accessrequest WHERE IDUser = '${id}'`, (err, res) => {
+        db.query(
+            `INSERT INTO accessrequest (IDUser,NameShop,AddressShop,Email,PhoneNumber,Status, CreateAt) VALUES 
+            (${idUser},'${nameShop}','${addressShop}', '${email}','${phoneNumber}', false , CURRENT_TIMESTAMP)`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+accessrequest.FindRequestByIDUser = ({ IDUser }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM accessrequest WHERE IDUser = ${IDUser}`, (err, res) => {
             if (err) {
-                console.log(err);
                 reject(err);
             } else {
-                // console.log("get by userid = " + id);
                 resolve(res);
             }
         });
     });
 };
-accessrequest.updateAccess = (id) => {
+
+accessrequest.UpdateStatus = ({ IDRequest }) => {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE accessrequest SET requestAccess = 0 WHERE IDUser = '${id}'`, (err, res) => {
+        db.query(`UPDATE accessrequest SET Status = true WHERE IDRequest = ${IDRequest}`, (err, res) => {
             if (err) {
-                console.log(err);
                 reject(err);
             } else {
                 resolve(res);

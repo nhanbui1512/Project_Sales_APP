@@ -11,16 +11,13 @@ const User = function (user) {
 };
 
 User.getAll = (result) => {
-    db.query(
-        'SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user',
-        (err, users) => {
-            if (!err) {
-                result(users);
-            } else {
-                result(null);
-            }
-        },
-    );
+    db.query('SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user', (err, users) => {
+        if (!err) {
+            result(users);
+        } else {
+            result(null);
+        }
+    });
 };
 
 User.findByID = ({ ID }) => {
@@ -113,16 +110,13 @@ User.ChangePass = ({ id, newPassword }) => {
 
 User.checkLogin = ({ userName, password }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
-                }
-            },
-        );
+        db.query(`SELECT * FROM user WHERE UserName = '${userName}' AND Password = '${password}'`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
     });
 };
 
@@ -140,16 +134,29 @@ User.updateAccess = ({ id }) => {
 
 User.updatePathAvatar = ({ fileName, userId }) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`,
-            (err, res) => {
-                if (err) {
-                    reject(err);
+        db.query(`UPDATE user SET AvatarPath = '${fileName}' WHERE IDUser = ${userId}`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    });
+};
+
+User.CheckPassword = ({ idUser, password }) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM user WHERE IDUser = ${idUser} AND Password = '${password}'`, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                if (res.length > 0) {
+                    resolve({ result: true });
                 } else {
-                    resolve(res);
+                    resolve({ result: false });
                 }
-            },
-        );
+            }
+        });
     });
 };
 

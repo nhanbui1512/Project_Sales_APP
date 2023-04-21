@@ -14,7 +14,9 @@ class loginController {
                 if (res.length > 0) {
                     const user = res[0];
                     const token = token_require.GenerateAccpectToken(user);
-                    return response.status(200).json({ result: true, message: 'login successful', token: token });
+                    return response
+                        .status(200)
+                        .json({ result: true, user: user, message: 'login successful', token: token });
                 } else {
                     return response.status(200).json({ result: false, message: 'username or password is not valid' });
                 }

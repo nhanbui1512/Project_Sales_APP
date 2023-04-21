@@ -37,17 +37,14 @@ router.put('/update', userController.UpdateUser);
 
 router.post('/registerSales', isLoginMiddleWare, userController.RegisterSales);
 
-router.post('/:iduser/requestAccess', isLoginMiddleWare, accessAdmin, userController.RequestAccess);
+router.put('/acceptrequeset', isLoginMiddleWare, accessAdmin, userController.AcceptSalesAccount);
+
+router.get('/allrequest', isLoginMiddleWare, accessAdmin, userController.getAllRequest);
 
 // Change Pass Word
 router.put('/changepassword', isLoginMiddleWare, userController.ChangePassword);
 
-router.post(
-    '/changeavatar',
-    isLoginMiddleWare,
-    upload.single('photo'),
-    userController.ChangeAvatar,
-);
+router.post('/changeavatar', isLoginMiddleWare, upload.single('photo'), userController.ChangeAvatar);
 
 router.post('/register', userController.registerAccount);
 
