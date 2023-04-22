@@ -1,5 +1,4 @@
-const newLocal = '../app/controllers/salesController';
-const salesController = require(newLocal);
+const salesController = require('../app/controllers/salesController');
 
 const multer = require('multer');
 const express = require('express');
@@ -22,6 +21,8 @@ router.get('/find', salesController.FindByID);
 router.put('/update', salesController.UpdatePost);
 router.post('/add', upload.array('photos', 12), salesController.CreatePostSales);
 router.get('/getrand', salesController.GetRand);
+
+router.get('/getbytypeid', salesController.FindPostsByTypeID);
 
 // /api/sales/delete?id_post=
 router.delete('/delete', salesController.DelPost);

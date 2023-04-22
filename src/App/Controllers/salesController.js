@@ -73,9 +73,7 @@ class salesController {
                             response.status(200).json({ result: true, message: 'Successful' });
                         })
                         .catch((err) => {
-                            response
-                                .status(501)
-                                .json({ result: false, message: 'Create Image is not successful' });
+                            response.status(501).json({ result: false, message: 'Create Image is not successful' });
                         });
                 })
                 .catch((err) => {
@@ -83,9 +81,7 @@ class salesController {
                     return response.status(500).json({ result: false, message: 'Server error' });
                 });
         } else {
-            return response
-                .status(500)
-                .json({ result: false, message: 'Bạn không có quyền đăng bài' });
+            return response.status(500).json({ result: false, message: 'Bạn không có quyền đăng bài' });
         }
     }
 
@@ -119,22 +115,16 @@ class salesController {
             .then(() => {
                 PostSales.Delete({ postID: postID })
                     .then(() => {
-                        response
-                            .status(200)
-                            .json({ result: true, message: 'Delete post successful' });
+                        response.status(200).json({ result: true, message: 'Delete post successful' });
                     })
                     .catch((err) => {
                         console.log(err);
-                        response
-                            .status(501)
-                            .json({ result: false, message: 'Delete post not successful' });
+                        response.status(501).json({ result: false, message: 'Delete post not successful' });
                     });
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(501)
-                    .json({ result: false, message: 'Delete images of post is not successful' });
+                response.status(501).json({ result: false, message: 'Delete images of post is not successful' });
             });
     }
 
@@ -171,6 +161,19 @@ class salesController {
             .catch((err) => {
                 console.log(err);
                 response.status(401).json({ result: false, message: err.sqlMessage });
+            });
+    }
+
+    FindPostsByTypeID(req, response) {
+        const idType = req.query.id_type;
+
+        PostSales.getByTypeID({ IDType: idType })
+            .then((res) => {
+                response.status(200).json({ result: true, data: res });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
 }

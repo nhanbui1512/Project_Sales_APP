@@ -25,7 +25,8 @@ class userController {
         userModel
             .findByID({ ID })
             .then((user) => {
-                return response.status(200).json({ data: user });
+                user[0].AvatarPath = `/uploads/images/${user[0].AvatarPath}`;
+                return response.status(200).json(user[0]);
             })
             .catch((err) => {
                 console.log(err);
@@ -96,7 +97,7 @@ class userController {
 
     UpdateUser(req, response) {
         const user = req.body;
-        const id = req.query.id;
+        const id = req.IDUser;
         userModel.UpdateUser({ user, id }, (result) => {
             return response.status(200).json({ result: result });
         });

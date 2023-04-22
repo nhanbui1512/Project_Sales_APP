@@ -84,7 +84,7 @@ User.CreateUser = ({ user }) => {
 
 User.UpdateUser = ({ user, id }, result) => {
     db.query(
-        `UPDATE user SET UserName = '${user.user_name}', Email = '${user.email}', PhoneNumber = '${user.phone_number}'
+        `UPDATE user SET Email = '${user.Email}', PhoneNumber = '${user.PhoneNumber}'
         WHERE IDUser = ${id}`,
         (err) => {
             if (err) {

@@ -33,7 +33,7 @@ router.get('/finduser', userController.FindUserByUserName);
 router.post('/create', isLoginMiddleWare, accessAdmin, userController.CreateUser);
 
 // Update Profile
-router.put('/update', userController.UpdateUser);
+router.put('/update', isLoginMiddleWare, userController.UpdateUser);
 
 router.post('/registerSales', isLoginMiddleWare, userController.RegisterSales);
 
