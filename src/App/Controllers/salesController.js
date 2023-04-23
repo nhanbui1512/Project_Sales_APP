@@ -168,8 +168,32 @@ class salesController {
         const idType = req.query.id_type;
 
         PostSales.getByTypeID({ IDType: idType })
-            .then((res) => {
-                response.status(200).json({ result: true, data: res });
+            .then((posts) => {
+                if (posts) {
+                    var newResult = [];
+
+                    for (let i = 0; i < posts.length; i++) {
+                        const element = posts[i];
+                        Image.getImagesByPost({ idPost: element.IDPost })
+                            .then((images) => {
+                                images = images.map((image) => {
+                                    image.Path = `/uploads/images/${image.Path}`;
+                                    return image;
+                                });
+                                element.images = images;
+                                return element;
+                            })
+                            .then((element) => {
+                                newResult.push(element);
+                            });
+                    }
+
+                    setTimeout(() => {
+                        return response.status(200).json({ result: true, data: newResult });
+                    }, 500);
+                } else {
+                    return response.status(200).json({ result: true, datat: [] });
+                }
             })
             .catch((err) => {
                 console.log(err);
