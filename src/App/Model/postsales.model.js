@@ -12,7 +12,7 @@ const PostSales = function (post) {
 
 PostSales.GetAll = (result) => {
     db.query(
-        'SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY CreateAt DESC',
+        'SELECT IDPost,postsales.IDUser, user.UserName ,Title,Price,Discount ,Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY CreateAt DESC',
         (err, res) => {
             if (err) {
                 console.log(err);
@@ -27,7 +27,7 @@ PostSales.GetAll = (result) => {
 PostSales.Find = ({ id }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDPost = ${id} `,
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Price,Discount, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDPost = ${id} `,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -42,8 +42,8 @@ PostSales.Find = ({ id }) => {
 PostSales.Create = ({ post }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `INSERT INTO postsales (Title, Description, CreateAt, UpdateAt,IDUser, IDType, Price, Discount) VALUES (
-            '${post.title}', '${post.description}', CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP , ${post.id_user} , ${post.id_type}, ${post.price} ,${post.discount})`,
+            `INSERT INTO postsales (Title, Description,Price,Discount, CreateAt, UpdateAt,IDUser, IDType, Price, Discount) VALUES (
+            '${post.title}', '${post.description}',${post.price},${post.discount}, CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP , ${post.id_user} , ${post.id_type}, ${post.price} ,${post.discount})`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -58,7 +58,7 @@ PostSales.Create = ({ post }) => {
 PostSales.Update = ({ post, idUser }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `UPDATE postsales SET Title = ${post.title} Description = ${post.description} UpdateAt = CURRENT_TIMESTAMP Price = ${post.price} Discount = ${post.discount} WHERE IDPost = ${post.idPost} and IDUser = ${idUser}`,
+            `UPDATE postsales SET Title = ${post.title}, Description = ${post.description}, UpdateAt = CURRENT_TIMESTAMP, Price = ${post.price}, Discount = '${post.discount}' WHERE IDPost = ${post.idPost} and IDUser = ${idUser}`,
             (err, res) => {
                 if (err) {
                     reject(err);
