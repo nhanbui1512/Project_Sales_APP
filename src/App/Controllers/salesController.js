@@ -200,5 +200,12 @@ class salesController {
                 response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
+
+    FindIncludeName(req, response) {
+        const name = req.query.name;
+        PostSales.findIncludeName({ name })
+            .then((posts) => {})
+            .catch(err);
+    }
 }
 module.exports = new salesController();

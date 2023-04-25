@@ -82,7 +82,7 @@ PostSales.Delete = ({ postID }) => {
 PostSales.getRand = ({ randNumber }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY RAND() LIMIT ${randNumber}`,
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,Price,Discount,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType ORDER BY RAND() LIMIT ${randNumber}`,
             (err, res) => {
                 if (err) {
                     reject(err);
@@ -98,6 +98,21 @@ PostSales.getByTypeID = ({ IDType }) => {
     return new Promise((resolve, reject) => {
         db.query(
             `SELECT IDPost,postsales.IDUser, user.UserName ,Title, Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND postsales.IDType = ${IDType} ORDER BY CreateAt DESC`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+PostSales.findIncludeName = ({ name }) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT IDPost,postsales.IDUser, user.UserName ,Title,Price,Discount ,Description,CreateAt,UpdateAt, typegoods.NameType FROM postsales, user, typegoods WHERE postsales.IDUser = user.IDUser AND postsales.IDType = typegoods.IDType AND  Title LIKE '%${name}%' ORDER BY CreateAt DESC`,
             (err, res) => {
                 if (err) {
                     reject(err);
