@@ -1,4 +1,5 @@
 const cartModel = require('../Model/cart.model');
+const Image = require('../Model/image.model');
 
 class cartController {
     //GET /news
@@ -60,8 +61,27 @@ class cartController {
         cartModel
             .getCartByUser({ idUser })
 
-            .then((res) => {
-                response.status(200).json({ result: true, data: res });
+            .then((result) => {
+                var newResult = [];
+                for (let i = 0; i < result.length; i++) {
+                    const element = result[i];
+                    Image.getImagesByPost({ idPost: element.IDPost })
+                        .then((images) => {
+                            images = images.map((image) => {
+                                image.Path = `/uploads/images/${image.Path}`;
+                                return image;
+                            });
+                            element.images = images;
+                            return element;
+                        })
+                        .then((element) => {
+                            newResult.push(element);
+                        });
+                }
+
+                setTimeout(() => {
+                    return response.status(200).json({ result: true, data: newResult });
+                }, 500);
             })
             .catch((err) => {
                 console.log(err);
@@ -79,14 +99,20 @@ class cartController {
             .then((res) => {
                 console.log(res);
                 if (res.changedRows > 0) {
-                    response.status(200).json({ result: true, message: 'Update count product successful' });
+                    response
+                        .status(200)
+                        .json({ result: true, message: 'Update count product successful' });
                 } else {
-                    response.status(200).json({ result: false, message: 'Update count product unsuccessful' });
+                    response
+                        .status(200)
+                        .json({ result: false, message: 'Update count product unsuccessful' });
                 }
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'Update count product unsuccessful' });
+                response
+                    .status(500)
+                    .json({ result: false, message: 'Update count product unsuccessful' });
             });
     }
 
@@ -95,11 +121,15 @@ class cartController {
         cartModel
             .deleteProduct({ idCart: idCart })
             .then((res) => {
-                response.status(200).json({ result: true, message: 'Delete product in cart successful' });
+                response
+                    .status(200)
+                    .json({ result: true, message: 'Delete product in cart successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response.status(500).json({ result: false, message: 'Delete product in cart unsuccessful' });
+                response
+                    .status(500)
+                    .json({ result: false, message: 'Delete product in cart unsuccessful' });
             });
     }
 
