@@ -1,4 +1,5 @@
 const cartModel = require('../Model/cart.model');
+const Image = require('../Model/image.model');
 
 class cartController {
     //GET /news
@@ -60,12 +61,27 @@ class cartController {
         cartModel
             .getCartByUser({ idUser })
 
-            .then((res) => {
-                var total = 0;
-                res.map((product) => {
-                    total += product.Count * product.Price;
-                });
-                response.status(200).json({ result: true, data: res, total: total });
+            .then((result) => {
+                var newResult = [];
+                for (let i = 0; i < result.length; i++) {
+                    const element = result[i];
+                    Image.getImagesByPost({ idPost: element.IDPost })
+                        .then((images) => {
+                            images = images.map((image) => {
+                                image.Path = `/uploads/images/${image.Path}`;
+                                return image;
+                            });
+                            element.images = images;
+                            return element;
+                        })
+                        .then((element) => {
+                            newResult.push(element);
+                        });
+                }
+
+                setTimeout(() => {
+                    return response.status(200).json({ result: true, data: newResult });
+                }, 500);
             })
             .catch((err) => {
                 console.log(err);
