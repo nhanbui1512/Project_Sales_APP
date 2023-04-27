@@ -61,7 +61,11 @@ class cartController {
             .getCartByUser({ idUser })
 
             .then((res) => {
-                response.status(200).json({ result: true, data: res });
+                var total = 0;
+                res.map((product) => {
+                    total += product.Count * product.Price;
+                });
+                response.status(200).json({ result: true, data: res, total: total });
             })
             .catch((err) => {
                 console.log(err);
