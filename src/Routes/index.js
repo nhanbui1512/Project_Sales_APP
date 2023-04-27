@@ -11,6 +11,8 @@ const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
 const adminMidleWare = require('../App/Middleware/adminMidleware');
 
 function route(app) {
+    app.use('/checktoken', isLoginMiddleWare, (req, res) => {
+            res.status(200).json({ message: 'ok' })})
     app.use('/api/user', userRoute);
     app.use('/api/sales', isLoginMiddleWare, salesRoute);
     app.use('/api/login', loginRoute);
