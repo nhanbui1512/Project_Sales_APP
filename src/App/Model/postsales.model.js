@@ -42,8 +42,8 @@ PostSales.Find = ({ id }) => {
 PostSales.Create = ({ post }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `INSERT INTO postsales (Title, Description,Price,Discount, CreateAt, UpdateAt,IDUser, IDType, Price, Discount) VALUES (
-            '${post.title}', '${post.description}',${post.price},${post.discount}, CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP , ${post.id_user} , ${post.id_type}, ${post.price} ,${post.discount})`,
+            `INSERT INTO postsales (Title, Description,Price,Discount, CreateAt, UpdateAt,IDUser, IDType) VALUES (
+            '${post.title}', '${post.description}',${post.price},${post.discount}, CURRENT_TIMESTAMP ,CURRENT_TIMESTAMP , ${post.id_user} , ${post.id_type})`,
             (err, res) => {
                 if (err) {
                     reject(err);

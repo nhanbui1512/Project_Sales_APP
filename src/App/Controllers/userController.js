@@ -1,6 +1,7 @@
 const userModel = require('../Model/user.model');
 const requestAccessModel = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
+const User = require('../Model/user.model');
 
 class userController {
     //GET all user
@@ -187,7 +188,11 @@ class userController {
                 if (res.changedRows == 0) {
                     response.status(200).json({ result: false, message: 'Update Request is unsuccessful' });
                 } else {
-                    response.status(200).json({ result: true, message: 'Update Request is successful' });
+                    User.updateAccess({ id: idUser })
+                        .then((data) => {
+                            response.status(200).json({ result: true, message: 'Update Request is successful' });
+                        })
+                        .catch((err) => {});
                 }
             })
             .catch((err) => {

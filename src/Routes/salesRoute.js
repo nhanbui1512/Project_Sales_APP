@@ -9,8 +9,12 @@ var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './src/Public/Uploads/Images');
     },
+
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now());
+        cb(null, file.originalname);
+    },
+    rename: function (fieldname, filename) {
+        return filename + '-' + Date.now();
     },
 });
 
