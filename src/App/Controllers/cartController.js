@@ -63,6 +63,13 @@ class cartController {
 
             .then((result) => {
                 var newResult = [];
+
+                var total = 0;
+
+                result.map((item) => {
+                    total += item.Count * item.Price * ((100 - item.Discount) / 100);
+                });
+
                 for (let i = 0; i < result.length; i++) {
                     const element = result[i];
                     Image.getImagesByPost({ idPost: element.IDPost })
@@ -80,7 +87,7 @@ class cartController {
                 }
 
                 setTimeout(() => {
-                    return response.status(200).json({ result: true, data: newResult });
+                    return response.status(200).json({ result: true, data: newResult, total: total });
                 }, 500);
             })
             .catch((err) => {
