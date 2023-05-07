@@ -282,11 +282,24 @@ class userController {
                     userModel
                         .CreateUser({ user })
                         .then((res) => {
-                            response.status(200).json({
-                                result: true,
-                                message: 'register account successful',
-                                userID: res.insertId,
-                            });
+                            const idUser = res.insertId;
+
+                            return idUser;
+                        })
+                        .then((idUser) => {
+                            userModel
+                                .findByID({ ID: idUser })
+                                .then((user) => {
+                                    response.status(200).json({
+                                        result: true,
+                                        message: 'register account successful',
+                                        user: user[0],
+                                    });
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    response.status(500).json({ result: false, message: 'server is error' });
+                                });
                         })
                         .catch((err) => {
                             console.log(err);

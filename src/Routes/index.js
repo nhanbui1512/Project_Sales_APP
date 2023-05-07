@@ -15,7 +15,7 @@ function route(app) {
     app.use('/api/sales', isLoginMiddleWare, salesRoute);
     app.use('/api/login', loginRoute);
     app.use('/api/comment', isLoginMiddleWare, commentRoute);
-    app.use('/api/type', isLoginMiddleWare, adminMidleWare, typeRoute);
+    app.use('/api/type', isLoginMiddleWare, typeRoute);
     app.use('/api/order', isLoginMiddleWare, orderRoute);
     app.use('/api/cart', isLoginMiddleWare, cartRoute);
     app.use('/', homeRouter);
