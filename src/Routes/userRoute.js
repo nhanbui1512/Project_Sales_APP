@@ -48,4 +48,6 @@ router.post('/changeavatar', isLoginMiddleWare, upload.single('photo'), userCont
 
 router.post('/register', userController.registerAccount);
 
+router.get('/getallsalesaccount', isLoginMiddleWare, userController.getAllSalesAccount);
+
 module.exports = router;
