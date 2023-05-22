@@ -160,4 +160,34 @@ User.CheckPassword = ({ idUser, password }) => {
     });
 };
 
+User.getAllSalesAccount = () => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE access = 2`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
+User.getAllUserAccount = () => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            `SELECT IDUser,UserName,Email,PhoneNumber,AvatarPath,Access FROM user WHERE access = 1`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
+    });
+};
+
 module.exports = User;

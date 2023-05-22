@@ -324,5 +324,39 @@ class userController {
                 response.status(500).json({ result: false, message: 'Server is error' });
             });
     }
+
+    getAllSalesAccount(req, response) {
+        userModel
+            .getAllSalesAccount()
+            .then((result) => {
+                var users = result.map((user) => {
+                    user.AvatarPath = `/uploads/images/${user.AvatarPath}`;
+                    return user;
+                });
+
+                response.status(200).json({ result: true, data: users });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'server is error' });
+            });
+    }
+
+    getAllUserAccount(req, response) {
+        userModel
+            .getAllUserAccount()
+            .then((result) => {
+                var users = result.map((user) => {
+                    user.AvatarPath = `/uploads/images/${user.AvatarPath}`;
+                    return user;
+                });
+
+                response.status(200).json({ result: true, data: users });
+            })
+            .catch((err) => {
+                console.log(err);
+                response.status(500).json({ result: false, message: 'server is error' });
+            });
+    }
 }
 module.exports = new userController();
