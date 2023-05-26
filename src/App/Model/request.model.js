@@ -13,13 +13,16 @@ const accessrequest = function (accessrequest) {
 
 accessrequest.GetAllRequest = () => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM accessrequest WHERE Status = false ORDER BY CreateAt DESC`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `SELECT * FROM accessrequest WHERE Status = false ORDER BY createAt DESC`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
@@ -53,13 +56,16 @@ accessrequest.FindRequestByIDUser = ({ IDUser }) => {
 
 accessrequest.UpdateStatus = ({ IDRequest }) => {
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE accessrequest SET Status = true WHERE IDRequest = ${IDRequest}`, (err, res) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res);
-            }
-        });
+        db.query(
+            `UPDATE accessrequest SET Status = true WHERE IDRequest = ${IDRequest}`,
+            (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            },
+        );
     });
 };
 
