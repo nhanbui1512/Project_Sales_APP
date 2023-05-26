@@ -256,6 +256,7 @@ class userController {
         userModel
             .findByID({ ID: idUser })
             .then((res) => {
+                res[0].AvatarPath = `/uploads/images/${res[0].AvatarPath}`;
                 response.status(200).json({ result: true, data: res[0] });
             })
             .catch((err) => {
