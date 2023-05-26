@@ -25,6 +25,7 @@ router.get('/find', salesController.FindByID);
 router.put('/update', salesController.UpdatePost);
 router.post('/add', upload.array('photos', 12), salesController.CreatePostSales);
 router.get('/getrand', salesController.GetRand);
+router.get('/findname', salesController.FindIncludeName);
 
 router.get('/getbytypeid', salesController.FindPostsByTypeID);
 
