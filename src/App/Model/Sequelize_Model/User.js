@@ -1,23 +1,12 @@
 const { DataTypes } = require('sequelize');
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('sales_app', 'root', '', {
-    dialect: 'mysql',
-});
-
-sequelize
-    .authenticate({ logging: () => {} })
-    .then(() => {
-        console.log('connect thanh cong');
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+const sequelize = require('./Connection');
 
 const User = sequelize.define(
     'User',
     {
         IDUser: {
             type: DataTypes.INTEGER,
+            autoIncrement: true,
             primaryKey: true,
         },
         UserName: {
@@ -44,5 +33,5 @@ const User = sequelize.define(
         timestamps: false,
     },
 );
-sequelize.sync();
+// sequelize.sync();
 module.exports = User;

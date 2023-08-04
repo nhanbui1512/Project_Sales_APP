@@ -2,63 +2,114 @@ const userModel = require('../Model/user.model');
 const requestAccess = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
 
+const User = require('../Model/Sequelize_Model/User');
+const { Sequelize } = require('sequelize');
+
 class userController {
     //GET all user
-    GetAll(req, response) {
-        userModel.getAll((result) => {
-            if (result != null) {
-                var users = result.map((user) => {
-                    user.AvatarPath = `/uploads/images/${user.AvatarPath}`;
-                    return user;
-                });
-
-                response.status(200).json({ data: users });
-            } else {
-                response.send('khong co du lieu');
-            }
-        });
+    async GetAll(req, response) {
+        try {
+            var result = await User.findAll();
+            var users = result.map((user) => {
+                user.AvatarPath = `/uploads/images/${user.AvatarPath}`;
+                return user;
+            });
+            response.status(200).json({ data: users });
+        } catch (error) {
+            response.status(500).json({ message: 'Server is error' });
+        }
     }
 
     // get user by id
-    FindByID(req, response) {
+    async FindByID(req, response) {
         const ID = req.query.id;
-        userModel
-            .findByID({ ID })
-            .then((users) => {
-                return response.status(200).json({ data: users[0] });
-            })
-            .catch((err) => {
-                console.log(err);
-                return response.status(204).json({ data: [] });
-            });
+        try {
+            // const user = await User.findOne({
+            //     where: {
+            //         IDUser: ID,
+            //     },
+            // });
+
+            // hoac la
+
+            const user = await User.findByPk(ID);
+            return response.status(200).json({ data: user });
+        } catch (error) {
+            console.log(err);
+            return response.status(204).json({ data: [] });
+        }
     }
 
     // get user  include name
-    FindInCludeName(req, response) {
+    async FindInCludeName(req, response) {
         const userName = req.query.user_name;
-        userModel.findIncludeName({ name: userName }, (result) => {
-            return response.status(200).json({ data: result });
-        });
+
+        try {
+            const users = await User.findAll({
+                where: {
+                    UserName: {
+                        [Sequelize.Op.like]: `%${userName}%`,
+                    },
+                },
+            });
+
+            return response.status(200).json({ data: users });
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ result: false, message: 'server is error' });
+        }
     }
 
     // get user by name
-    FindUserByUserName(req, response) {
+    async FindUserByUserName(req, response) {
         const userName = req.query.user_name;
-        userModel
-            .findByName({ userName: userName })
-            .then((data) => {
-                return response.status(200).json(data);
-            })
-            .catch((err) => {
-                return response.status(501).json({ result: null });
+
+        try {
+            const users = await User.findAll({
+                where: {
+                    UserName: userName,
+                },
             });
+
+            return response.status(200).json({ data: users });
+        } catch (error) {
+            return response.status(501).json({ message: 'Server is error', data: [] });
+        }
     }
 
-    CreateUser(req, response) {
+    async CreateUser(req, response) {
         const user = req.body;
-        userModel.CreateUser({ user: user }, (result) => {
-            return response.status(200).json({ result: result });
-        });
+
+        try {
+            const isExist = await User.findOne({
+                where: {
+                    UserName: user.user_name,
+                },
+            });
+
+            if (isExist) {
+                return response.status(200).json({ result: false, message: 'username is exist' });
+            } else {
+                const newUser = await User.create({
+                    UserName: user.user_name,
+                    Password: user.password,
+                    Email: user.email,
+                    PhoneNumber: user.phone_number,
+                    Access: user.access,
+                });
+
+                await newUser.save();
+
+                return response
+                    .status(200)
+                    .json({ result: true, message: 'Create user is successful' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response
+                .status(500)
+                .json({ result: false, message: 'Create user is not successful' });
+        }
     }
 
     UpdateUser(req, response) {
