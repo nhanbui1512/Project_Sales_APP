@@ -1,10 +1,11 @@
 const userModel = require('../Model/user.model');
 const requestAccessModel = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
-const User = require('../Model/user.model');
+// const User = require('../Model/user.model');
 
 const User = require('../Model/Sequelize_Model/User');
 const { Sequelize } = require('sequelize');
+const { default: retryAsPromised } = require('retry-as-promised');
 
 class userController {
     //GET all user
@@ -109,46 +110,51 @@ class userController {
         }
     }
 
-    UpdateUser(req, response) {
-        const user = req.body;
+    async UpdateUser(req, response) {
+        const infoUpdate = req.body;
         const id = req.IDUser;
-        userModel.UpdateUser({ user, id }, (result) => {
-            return response.status(200).json({ result: result });
-        });
+
+        try {
+            let user = await User.findByPk(id);
+
+            user.set({
+                Email: infoUpdate.email,
+                PhoneNumber: infoUpdate.phone_number,
+            });
+
+            await user.save();
+
+            return response.status(200).json({ result: true, message: 'update user successful' });
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ result: false, message: 'server is error' });
+        }
     }
 
-    ChangePassword(req, response) {
+    async ChangePassword(req, response) {
         const id = req.IDUser;
         const oldPassword = req.body.old_password;
         const newPassword = req.body.new_password;
 
-        userModel
-            .CheckPassword({ idUser: id, password: oldPassword })
-            .then((res) => {
-                if (res.result == true) {
-                    userModel
-                        .ChangePass({ id, newPassword })
-                        .then((res) => {
-                            if (res.changedRows > 0) {
-                                response.status(200).json({ result: true, message: 'Update password is successful' });
-                            } else {
-                                response
-                                    .status(400)
-                                    .json({ result: false, message: 'Update password is unsuccessful' });
-                            }
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            response.status(500).json({ result: false, message: 'Server is error' });
-                        });
-                } else {
-                    response.status(400).json({ result: false, message: 'old password is wrong' });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                response.status(500).json({ result: false, message: 'Server is error' });
+        try {
+            var user = await User.findOne({
+                where: {
+                    IDUser: id,
+                    Password: oldPassword,
+                },
             });
+
+            if (user) {
+                user.set({ Password: newPassword });
+                await user.save();
+                return response.status(200).json({ result: true, message: 'change password successful' });
+            } else {
+                response.status(200).json({ result: false, message: 'old password wrong' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ result: false, message: 'Server error' });
+        }
     }
 
     // Gửi đơn yêu cầu trở thành nhà bán hàng
@@ -214,54 +220,30 @@ class userController {
             });
     }
 
-    ChangeAvatar(req, response) {
+    async ChangeAvatar(req, response) {
         const file = req.file;
         const idUser = req.IDUser;
 
-        userModel
-            .findByID({ ID: idUser })
-            .then((user) => {
-                if (user[0].AvatarPath != 'default_avatar.jpg') {
-                    StorageAvatar.DeleteAvatarFile({ fileName: user[0].AvatarPath })
-                        .then((res) => {
-                            userModel
-                                .updatePathAvatar({ fileName: file.filename, userId: idUser })
-                                .then((result) => {
-                                    response.status(200).json({
-                                        result: true,
-                                        message: 'update avatar successful',
-                                    });
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                    response.status(501).json({
-                                        result: false,
-                                        message: 'update avatar is unsuccessful',
-                                    });
-                                });
-                        })
-                        .catch((err) => {
-                            response.status(501).json({ result: false, message: 'fail to delete old avatar' });
-                        });
+        try {
+            var user = await User.findByPk(idUser);
+            if (user) {
+                if (user.AvatarPath != 'default_avatar.jpg') {
+                    let res = await StorageAvatar.DeleteAvatarFile({ fileName: user.AvatarPath });
+                    console.log(res);
+                    user.set({ AvatarPath: file.filename });
+                    await user.save();
                 } else {
-                    userModel
-                        .updatePathAvatar({ fileName: file.filename, userId: idUser })
-                        .then((result) => {
-                            response.status(200).json({ result: true, message: 'update avatar successful' });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            response.status(501).json({
-                                result: false,
-                                message: 'update avatar is unsuccessful',
-                            });
-                        });
+                    user.set({ AvatarPath: file.filename });
+                    await user.save();
                 }
-            })
-            .catch((err) => {
-                console.log(err);
-                response.status(201).json({ result: false, message: 'not found user by user id ' });
-            });
+                return response.status(200).json({ result: true, message: 'update avatar successful' });
+            } else {
+                return response.status(200).json({ result: false, message: 'not found user' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ result: false, message: 'server error' });
+        }
     }
 
     getMyProfile(req, response) {
