@@ -1,4 +1,5 @@
 const salesController = require('../app/controllers/salesController');
+const businessMiddleWare = require('../App/Middleware/businessMiddleware');
 
 const multer = require('multer');
 const express = require('express');
@@ -23,9 +24,9 @@ var upload = multer({ storage: storage });
 router.get('/getall', salesController.GetAll);
 router.get('/find', salesController.FindByID);
 router.put('/update', salesController.UpdatePost);
-router.post('/add', upload.array('photos', 12), salesController.CreatePostSales);
+router.post('/add', businessMiddleWare, upload.array('photos', 12), salesController.CreatePostSales);
 router.get('/getrand', salesController.GetRand);
-
+router.get('/findname', salesController.FindIncludeName);
 router.get('/getbytypeid', salesController.FindPostsByTypeID);
 
 // /api/sales/delete?id_post=

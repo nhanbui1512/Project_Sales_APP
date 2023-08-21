@@ -22,7 +22,7 @@ cart.addProduct = ({ idUser, count, idPost }) => {
 cart.getCartByUser = ({ idUser }) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT cart.IDCart, cart.Count, postsales.IDPost, postsales.Title, postsales.Description, postsales.Price, postsales.Discount FROM cart JOIN postsales ON cart.IDPost = postsales.IDPost WHERE cart.IDUser = ${idUser}`,
+            `SELECT carts.IDCart, carts.Count, postsales.IDPost, postsales.Title, postsales.Description, postsales.Price, postsales.Discount FROM carts JOIN postsales ON carts.IDPost = postsales.IDPost WHERE carts.IDUser = ${idUser}`,
             (err, res) => {
                 if (err) {
                     reject(err);

@@ -1,30 +1,34 @@
 const userModel = require('../Model/user.model');
 const token_require = require('../../until/token');
+const { User, Access } = require('../Model/Sequelize_Model');
+
 require('dotenv').config();
 
 class loginController {
     //GET all sales post
-    checkLogin(req, response) {
-        const userName = req.body.user_name;
+    async checkLogin(req, response) {
+        const email = req.body.email;
         const passWord = req.body.password;
 
-        userModel
-            .checkLogin({ userName: userName, password: passWord })
-            .then((res) => {
-                if (res.length > 0) {
-                    const user = res[0];
-                    const token = token_require.GenerateAccpectToken(user);
-                    return response
-                        .status(200)
-                        .json({ result: true, user: user, message: 'login successful', token: token });
-                } else {
-                    return response.status(200).json({ result: false, message: 'username or password is not valid' });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                return response.status(500).json({ res: 'Error Server' });
+        try {
+            var user = await User.findOne({
+                where: {
+                    email: email,
+                    passWord: passWord,
+                },
             });
+
+            if (user === null) {
+                return response.status(200).json({ result: false, message: 'email or password is wrong' });
+            } else {
+                user = user.toJSON();
+                const token = token_require.GenerateAccpectToken(user);
+                return response.status(200).json({ result: true, token: token });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ message: error.message });
+        }
     }
 }
 module.exports = new loginController();

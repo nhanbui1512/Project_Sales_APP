@@ -8,7 +8,7 @@ const orderRoute = require('./orderRoute');
 const cartRoute = require('./cartRoute');
 
 const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
-const adminMidleWare = require('../App/Middleware/adminMidleware');
+const adminMiddleware = require('../App/Middleware/adminMiddleware');
 
 function route(app) {
     app.use('/api/user', userRoute);

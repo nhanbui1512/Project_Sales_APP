@@ -33,5 +33,5 @@ const User = sequelize.define(
         timestamps: false,
     },
 );
-// sequelize.sync();
+sequelize.sync();
 module.exports = User;

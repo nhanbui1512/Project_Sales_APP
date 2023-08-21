@@ -1,6 +1,6 @@
 const userController = require('../App/Controllers/userController');
 const isLoginMiddleWare = require('../App/Middleware/isLoginMiddleware');
-const accessAdmin = require('../App/Middleware/adminMidleware');
+const accessAdmin = require('../App/Middleware/adminMiddleware');
 
 const multer = require('multer');
 const express = require('express');
@@ -48,12 +48,7 @@ router.get('/allrequest', isLoginMiddleWare, accessAdmin, userController.getAllR
 // Change Pass Word
 router.put('/changepassword', isLoginMiddleWare, userController.ChangePassword);
 
-router.post(
-    '/changeavatar',
-    isLoginMiddleWare,
-    upload.single('photo'),
-    userController.ChangeAvatar,
-);
+router.post('/changeavatar', isLoginMiddleWare, upload.single('photo'), userController.ChangeAvatar);
 
 router.post('/register', userController.registerAccount);
 

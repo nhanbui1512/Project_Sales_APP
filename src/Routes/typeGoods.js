@@ -1,5 +1,5 @@
 const typeGoodsController = require('../App/Controllers/typeGoodsController');
-const adminMidleWare = require('../App/Middleware/adminMidleware');
+const adminMiddleware = require('../App/Middleware/adminMiddleware');
 
 const express = require('express');
 const router = express.Router();
@@ -18,8 +18,8 @@ var upload = multer({ storage: storage });
 
 router.get('/getall', typeGoodsController.getAll);
 router.get('/gettype', typeGoodsController.getByID);
-router.post('/add', adminMidleWare, upload.single('icon'), typeGoodsController.addType);
-router.put('/update', adminMidleWare, typeGoodsController.updateType);
-router.put('/changeicon', adminMidleWare, upload.single('icon'), typeGoodsController.changeIconType);
+router.post('/add', adminMiddleware, upload.single('icon'), typeGoodsController.addType);
+router.put('/update', adminMiddleware, typeGoodsController.updateType);
+router.put('/changeicon', adminMiddleware, upload.single('icon'), typeGoodsController.changeIconType);
 
 module.exports = router;

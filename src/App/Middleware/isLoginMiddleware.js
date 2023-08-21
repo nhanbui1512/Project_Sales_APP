@@ -13,7 +13,6 @@ const isLoginMiddleWare = (req, response, next) => {
             req.user_name = decode.user_name;
             next();
         } catch (error) {
-            console.log(error);
             response.status(200).json({ result: false, message: 'Can Phai Login' });
             return;
         }

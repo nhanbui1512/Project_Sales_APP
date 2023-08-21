@@ -6,9 +6,10 @@ module.exports = {
     GenerateAccpectToken(user) {
         return jwt.sign(
             {
-                IDUser: user.IDUser,
-                access: user.Access,
-                userName: user.UserName,
+                IDUser: user.userId,
+                access: user.accessAccessId,
+                userName: user.userName,
+                email: user.email,
             },
             process.env.JWT_PASS,
             {

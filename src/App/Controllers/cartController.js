@@ -1,101 +1,83 @@
 const cartModel = require('../Model/cart.model');
 const Image = require('../Model/image.model');
+const Cart = require('../Model/Sequelize_Model/Cart');
+const Product = require('../Model/Sequelize_Model/PostSales');
 
 class cartController {
     //GET /news
-    addProduct(req, response) {
+    async addProduct(req, response) {
         const idPost = req.body.idPost;
         const count = req.body.count;
         const idUser = req.IDUser;
 
-        // Chưa xong
-        cartModel
-            .checksValidProduct({ idPost: idPost, idUser: idUser })
-            .then((res) => {
-                if (res == false) {
-                    // nếu chưa tồn tại sản phẩm trong giỏ hàng
-                    cartModel
-                        .addProduct({ idPost, count, idUser })
-                        .then((res) => {
-                            response.status(200).json({
-                                result: true,
-                                message: 'Insert product to cart successful',
-                            });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            response.status(500).json({
-                                result: false,
-                                message: 'Insert product to cart not successful',
-                            });
-                        });
-                } else {
-                    const idCart = res[0].IDCart;
-                    var oldCount = res[0].Count;
-                    var newCount = oldCount + count;
-                    cartModel
-                        .updateCountProduct({ idCart, count: newCount, idUser })
-                        .then((res) => {
-                            response.status(200).json({
-                                result: true,
-                                message: 'Insert product to cart successful',
-                            });
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                            response.status(500).json({
-                                result: false,
-                                message: 'Insert product to cart unsuccessful',
-                            });
-                        });
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                response.status(500).json({ result: false, message: 'add Product into cart fail' });
+        try {
+            let checkExist = await Cart.findOne({
+                where: {
+                    IDUser: idUser,
+                    IDPost: idPost,
+                },
             });
+
+            if (checkExist) {
+                checkExist.set({ Count: checkExist.Count + count });
+                await checkExist.save();
+                return response.status(200).json({ result: true, message: 'Add product in cart successful' });
+            } else {
+                let newCart = await Cart.create({ IDPost: idPost, IDUser: idUser, Count: count });
+                await newCart.save();
+                return response.status(200).json({ result: true, message: 'Add one product in cart successful' });
+            }
+        } catch (error) {
+            console.log(error);
+            return response.status(500).json({ result: false, message: 'server error' });
+        }
     }
 
-    getAllProductInCart(req, response) {
+    async getAllProductInCart(req, response) {
         const idUser = req.IDUser;
-        cartModel
-            .getCartByUser({ idUser })
 
-            .then((result) => {
-                var newResult = [];
+        const products = await Cart.findAll({
+            include: [{ model: Product, attributes: ['Title, Description'] }],
+        });
 
-                var total = 0;
+        console.log(products);
 
-                result.map((item) => {
-                    total += item.Count * item.Price * ((100 - item.Discount) / 100);
-                });
+        // cartModel
+        //     .getCartByUser({ idUser })
 
-                for (let i = 0; i < result.length; i++) {
-                    const element = result[i];
-                    Image.getImagesByPost({ idPost: element.IDPost })
-                        .then((images) => {
-                            images = images.map((image) => {
-                                image.Path = `/uploads/images/${image.Path}`;
-                                return image;
-                            });
-                            element.images = images;
-                            return element;
-                        })
-                        .then((element) => {
-                            newResult.push(element);
-                        });
-                }
+        //     .then((result) => {
+        //         var newResult = [];
 
-                setTimeout(() => {
-                    return response
-                        .status(200)
-                        .json({ result: true, data: newResult, total: total });
-                }, 500);
-            })
-            .catch((err) => {
-                console.log(err);
-                response.status(500).json({ result: false, message: 'server error' });
-            });
+        //         var total = 0;
+
+        //         result.map((item) => {
+        //             total += item.Count * item.Price * ((100 - item.Discount) / 100);
+        //         });
+
+        //         for (let i = 0; i < result.length; i++) {
+        //             const element = result[i];
+        //             Image.getImagesByPost({ idPost: element.IDPost })
+        //                 .then((images) => {
+        //                     images = images.map((image) => {
+        //                         image.Path = `/uploads/images/${image.Path}`;
+        //                         return image;
+        //                     });
+        //                     element.images = images;
+        //                     return element;
+        //                 })
+        //                 .then((element) => {
+        //                     newResult.push(element);
+        //                 });
+        //         }
+
+        //         setTimeout(() => {
+        //             return response.status(200).json({ result: true, data: newResult, total: total });
+        //         }, 500);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //         response.status(500).json({ result: false, message: 'server error' });
+        //     });
     }
 
     updateCountProduct(req, response) {
@@ -108,20 +90,14 @@ class cartController {
             .then((res) => {
                 console.log(res);
                 if (res.changedRows > 0) {
-                    response
-                        .status(200)
-                        .json({ result: true, message: 'Update count product successful' });
+                    response.status(200).json({ result: true, message: 'Update count product successful' });
                 } else {
-                    response
-                        .status(200)
-                        .json({ result: false, message: 'Update count product unsuccessful' });
+                    response.status(200).json({ result: false, message: 'Update count product unsuccessful' });
                 }
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: 'Update count product unsuccessful' });
+                response.status(500).json({ result: false, message: 'Update count product unsuccessful' });
             });
     }
 
@@ -130,15 +106,11 @@ class cartController {
         cartModel
             .deleteProduct({ idCart: idCart })
             .then((res) => {
-                response
-                    .status(200)
-                    .json({ result: true, message: 'Delete product in cart successful' });
+                response.status(200).json({ result: true, message: 'Delete product in cart successful' });
             })
             .catch((err) => {
                 console.log(err);
-                response
-                    .status(500)
-                    .json({ result: false, message: 'Delete product in cart unsuccessful' });
+                response.status(500).json({ result: false, message: 'Delete product in cart unsuccessful' });
             });
     }
 
