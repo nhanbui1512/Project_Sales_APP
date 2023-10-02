@@ -1,7 +1,14 @@
 const requestAccessModel = require('../Model/request.model');
 const StorageAvatar = require('../Services/FileStorage');
+const cloudinary = require('cloudinary').v2;
 
-const { User, Access, Product } = require('../Model/Sequelize_Model');
+cloudinary.config({
+    cloud_name: 'dmykkmqwz',
+    api_key: '717446961172636',
+    api_secret: 'BDI2afQxDPT06dbAAFO43KKSr9o',
+});
+
+const { User, Access, Product, sequelize } = require('../Model/Sequelize_Model');
 
 const { Sequelize } = require('sequelize');
 
@@ -10,7 +17,7 @@ class userController {
     async GetAll(req, response) {
         try {
             const currentPage = req.query.page || 1;
-            const itemsPerPage = 5; // Số bản ghi trên mỗi trang
+            const itemsPerPage = 10; // Số bản ghi trên mỗi trang
 
             const offset = (currentPage - 1) * itemsPerPage; // Tính OFFSET
             var result = await User.findAll({
@@ -22,7 +29,16 @@ class userController {
                 offset: offset,
             });
 
-            response.status(200).json({ data: result });
+            const total = await User.count();
+
+            response.status(200).json({
+                data: result,
+                meta: {
+                    total: total,
+                    count: result.length,
+                    currentPage: Number(currentPage),
+                },
+            });
         } catch (error) {
             response.status(500).json({ message: 'Server is error' });
         }
@@ -118,11 +134,15 @@ class userController {
                     avatar: 'default_avatar.jpg',
                 });
 
-                return response.status(200).json({ result: true, message: 'Create user is successful', user: newUser });
+                return response
+                    .status(200)
+                    .json({ result: true, message: 'Create user is successful', user: newUser });
             }
         } catch (error) {
             console.log(error);
-            return response.status(500).json({ result: false, message: 'Create user is not successful' });
+            return response
+                .status(500)
+                .json({ result: false, message: 'Create user is not successful' });
         }
     }
 
@@ -171,9 +191,11 @@ class userController {
             if (user) {
                 user.set({ password: newPassword });
                 await user.save();
-                return response
-                    .status(200)
-                    .json({ result: true, message: 'change password successful', newPassword: newPassword });
+                return response.status(200).json({
+                    result: true,
+                    message: 'change password successful',
+                    newPassword: newPassword,
+                });
             } else {
                 response.status(200).json({ result: false, message: 'old password wrong' });
             }
@@ -210,11 +232,15 @@ class userController {
                             phoneNumber: form.phoneNumber,
                         })
                         .then((res) => {
-                            response.status(200).json({ result: true, message: 'Add request is successful' });
+                            response
+                                .status(200)
+                                .json({ result: true, message: 'Add request is successful' });
                         })
                         .catch((err) => {
                             console.log(err);
-                            response.status(500).json({ result: false, message: 'Add request is unsuccessful' });
+                            response
+                                .status(500)
+                                .json({ result: false, message: 'Add request is unsuccessful' });
                         });
                 }
             })
@@ -231,11 +257,15 @@ class userController {
             .UpdateStatus({ IDRequest: idRequest })
             .then((res) => {
                 if (res.changedRows == 0) {
-                    response.status(200).json({ result: false, message: 'Update Request is unsuccessful' });
+                    response
+                        .status(200)
+                        .json({ result: false, message: 'Update Request is unsuccessful' });
                 } else {
                     User.updateAccess({ id: idUser })
                         .then((data) => {
-                            response.status(200).json({ result: true, message: 'Update Request is successful' });
+                            response
+                                .status(200)
+                                .json({ result: true, message: 'Update Request is successful' });
                         })
                         .catch((err) => {});
                 }
@@ -247,22 +277,36 @@ class userController {
     }
 
     async ChangeAvatar(req, response) {
-        const file = req.file;
         const idUser = req.IDUser;
+        const { originalname, buffer } = req.file;
+
+        if (!buffer) {
+            return response.status(401).json({ message: 'file not is attached' });
+        }
 
         try {
             var user = await User.findByPk(idUser);
             if (user) {
-                if (user.avatar != 'default_avatar.jpg') {
-                    await StorageAvatar.DeleteAvatarFile({ fileName: user.avatar });
+                console.log(user);
+                cloudinary.uploader
+                    .upload_stream(
+                        {
+                            resource_type: 'auto', // Set to 'auto' to let Cloudinary detect the resource type
+                            public_id: originalname, // Change to your desired public ID
+                            folder: 'uploads', // Change to your desired folder name
+                            format: 'jpg', // Change to your desired format
+                        },
+                        async (error, result) => {
+                            if (error) {
+                                return response.status(500).json({ error: error.message });
+                            }
 
-                    user.set({ avatar: file.filename });
-                    await user.save();
-                } else {
-                    user.set({ avatar: file.filename });
-                    await user.save();
-                }
-                return response.status(200).json({ result: true, message: 'update avatar successful' });
+                            user.avatar = result.secure_url;
+                            await user.save();
+                            return response.status(200).json({ message: 'update avatar success' });
+                        },
+                    )
+                    .end(buffer);
             } else {
                 return response.status(200).json({ result: false, message: 'not found user' });
             }
@@ -282,7 +326,6 @@ class userController {
                 },
                 include: Access,
             });
-
             return response.status(200).json(user);
         } catch (error) {
             console.log(error);

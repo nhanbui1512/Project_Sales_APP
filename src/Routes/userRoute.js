@@ -6,18 +6,7 @@ const multer = require('multer');
 const express = require('express');
 const router = express.Router();
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './src/Public/Uploads/Images');
-    },
-
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    },
-    rename: function (fieldname, filename) {
-        return filename + '-' + Date.now();
-    },
-});
+var storage = multer.memoryStorage();
 
 var upload = multer({ storage: storage });
 
@@ -48,7 +37,12 @@ router.get('/allrequest', isLoginMiddleWare, accessAdmin, userController.getAllR
 // Change Pass Word
 router.put('/changepassword', isLoginMiddleWare, userController.ChangePassword);
 
-router.post('/changeavatar', isLoginMiddleWare, upload.single('photo'), userController.ChangeAvatar);
+router.post(
+    '/changeavatar',
+    isLoginMiddleWare,
+    upload.single('photo'),
+    userController.ChangeAvatar,
+);
 
 router.post('/register', userController.registerAccount);
 

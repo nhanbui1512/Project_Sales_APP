@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes, Op, fn } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const timeFormat = require('../../Services/Time');
 
 const sequelize = new Sequelize('shopee', 'root', '', {
@@ -40,7 +40,7 @@ const User = sequelize.define('users', {
         type: DataTypes.STRING,
         get() {
             const avatar = this.getDataValue('avatar');
-            return `/uploads/images/${avatar}`;
+            return avatar;
         },
     },
     createAt: {
